@@ -170,22 +170,7 @@
 <blockquote>
 <p>diff算法只会精细化比较相同的节点(<strong>即节点的key和sel都相同</strong>),否则会暴力删除旧节点,增加新节点  </p>
 </blockquote>
-<h2 id="patch函数"><a href="#patch函数" class="headerlink" title="patch函数"></a>patch函数</h2><p><img src="/../../public/assets/img/patch.png" alt="alt "></p>
-<p>我们先来手撕一下当oldVnode和newVnode不是同一个节点的时候,patch函数是如何暴力删除旧的,插入新的</p>
-<blockquote>
-<p>顺序应该是先插入再删除,如果先删除,则会失去插入的位置  </p>
-</blockquote>
-<p>在此之前,我们要先手撕另一个函数 <strong>createElement</strong><br>这个函数用于把Vnode转化成为真实DOM,但是不进行插入,此时的节点是孤儿节点</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">createElement</span>(<span class="params">Vnode</span>)&#123;</span><br><span class="line">    <span class="keyword">let</span> domNode = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="title class_">Vnode</span>.<span class="property">sel</span>)</span><br><span class="line">    <span class="keyword">if</span>(domNode.<span class="property">text</span> != <span class="string">&#x27;&#x27;</span> &amp;&amp; (domNode.<span class="property">children</span> == <span class="literal">undefined</span> || domNode.<span class="property">children</span>.<span class="property">length</span> == <span class="number">0</span>))&#123;</span><br><span class="line">        <span class="comment">//节点只包含文字,则不需要递归调用创建dom</span></span><br><span class="line">        domNode.<span class="property">innerText</span> = <span class="title class_">Vnode</span>.<span class="property">text</span></span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(<span class="title class_">Array</span>.<span class="title function_">isArray</span>(domNode.<span class="property">children</span>))&#123;</span><br><span class="line">        <span class="comment">//说明当前Vnode中有Vnode嵌套,需要递归创建DOM</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; i&lt;domNode.<span class="property">children</span>.<span class="property">length</span>; i++)&#123;</span><br><span class="line">            <span class="keyword">let</span> ch = domNode.<span class="property">children</span>[i]</span><br><span class="line">            <span class="keyword">let</span> chdom = <span class="title function_">createElement</span>(ch)</span><br><span class="line">            domNode.<span class="title function_">appendChild</span>(chdom)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title class_">Vnode</span>.<span class="property">elm</span> = domNode</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//这个函数返回的是一个纯DOM对象!!!!!</span></span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">Vnode</span>.<span class="property">elm</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>接下来我们就来手撕<del>半个</del>patch函数</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">patch</span>(<span class="params">oldVnode,newVnode</span>)&#123;</span><br><span class="line">    <span class="comment">//首先判断老节点是虚拟dom还是真实dom</span></span><br><span class="line">    <span class="keyword">if</span>(oldVnode.<span class="property">sel</span> == <span class="string">&#x27;&#x27;</span> || oldVnode.<span class="property">sel</span> == <span class="literal">undefined</span>)&#123;</span><br><span class="line">        <span class="comment">//如果不是虚拟节点,则用vnode函数创建出虚拟节点(vnode函数上篇博客已经详细讲述过)</span></span><br><span class="line">        oldVnode = <span class="title function_">vnode</span>(oldVnode.<span class="property">tagName</span>.<span class="title function_">toLowerCase</span>(),&#123;&#125;,[],<span class="literal">undefined</span>,oldVnode)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(oldVnode.<span class="property">sel</span> == newVnode.<span class="property">sel</span> &amp;&amp; oldVnode.<span class="property">key</span> == newVnode.<span class="property">key</span>)&#123;</span><br><span class="line">        <span class="comment">//说明这俩是同一个节点!! 需要进行精细化比较,下篇博客详细分析</span></span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//不是同一个节点,暴力插新删旧</span></span><br><span class="line">        <span class="keyword">let</span> newVnodeElm = <span class="title function_">createElement</span>(newVnode)</span><br><span class="line">        <span class="keyword">if</span>(oldVnode.<span class="property">elm</span>.<span class="property">parentNode</span> &amp;&amp; newVnodeElm)&#123;</span><br><span class="line">            oldVnode.<span class="property">elm</span>.<span class="property">parentNode</span>.<span class="title function_">insertBefore</span>(newVnodeElm,oldVnode.<span class="property">elm</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//删除老节点</span></span><br><span class="line">        oldVnode.<span class="property">elm</span>.<span class="property">parentNode</span>.<span class="title function_">removeChild</span>(oldVnode.<span class="property">elm</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>至此,我们已经手撕完patch函数<strong>暴力替换</strong>的部分啦,那么下一章博客就是精细化比较的部分啦<br>不得不说,源码真的是太优雅辣</p>
-<blockquote>
-<p>重新学习vue3第三天<br>写于第四阅览室</p>
-</blockquote>
-
+        
       
 
       
@@ -198,7 +183,11 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">diff算法 vue源码</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">vue源码</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">diff算法</a>
         		</li>
       		
 		</ul>
@@ -552,7 +541,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">diff算法 vue源码</a>
+                <a href="javascript:void(0)" class="js-tag color2">diff算法</a>
               </li>
             
             <div class="clearfix"></div>
