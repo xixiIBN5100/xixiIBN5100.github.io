@@ -146,6 +146,87 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-diff算法-手撕子节点更新策略" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/">diff算法--手撕子节点更新策略</a>
+    </h1>
+  
+
+        
+        <a href="/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/" class="archive-article-date">
+  	<time datetime="2024-04-14T06:21:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="子节点更新策略"><a href="#子节点更新策略" class="headerlink" title="子节点更新策略"></a>子节点更新策略</h2><p>当patch的时候新旧节点都含有子节点的时候,需要找到旧节点中可以被复用的子节点.<br>封装一个函数,采用双指针法遍历虚拟dom树,找到可以复用的节点,接下来我们来手撕一下updateChildren()函数  </p>
+<blockquote>
+<p>值得一提的是,因为时间和能力有限,只能最大限度的还原此函数,只展示函数中最有魅力的算法精髓,对于一些繁琐的边界判断,可能会有所疏忽  </p>
+</blockquote>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">vue源码</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">diff算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-diff算法-patch函数的补全" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -166,13 +247,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="patch函数的假补全"><a href="#patch函数的假补全" class="headerlink" title="patch函数的假补全"></a>patch函数的<del>假</del>补全</h2><p> 补全一下前一篇博客中新旧节点是同一个节点的代码<br> <img src="/assets/img/patch2.png"><br> 即图片中红色部分</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">patch</span>(<span class="params">oldVnode,newVnode</span>)&#123;</span><br><span class="line">    <span class="comment">//首先判断老节点是虚拟dom还是真实dom</span></span><br><span class="line">    <span class="keyword">if</span>(oldVnode.<span class="property">sel</span> == <span class="string">&#x27;&#x27;</span> || oldVnode.<span class="property">sel</span> == <span class="literal">undefined</span>)&#123;</span><br><span class="line">        <span class="comment">//如果不是虚拟节点,则用vnode函数创建出虚拟节点(vnode函数上篇博客已经详细讲述过)</span></span><br><span class="line">        oldVnode = <span class="title function_">vnode</span>(oldVnode.<span class="property">tagName</span>.<span class="title function_">toLowerCase</span>(),&#123;&#125;,[],<span class="literal">undefined</span>,oldVnode)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(oldVnode.<span class="property">sel</span> == newVnode.<span class="property">sel</span> &amp;&amp; oldVnode.<span class="property">key</span> == newVnode.<span class="property">key</span>)&#123;</span><br><span class="line">        <span class="comment">//说明这俩是同一个节点!! 就是这个分支</span></span><br><span class="line">     <span class="keyword">if</span>(oldVnode == newVnode)&#123;</span><br><span class="line">         <span class="keyword">return</span>;<span class="comment">//说明新旧节点在内存中是同一块位置,直接返回即可</span></span><br><span class="line">     &#125;<span class="keyword">else</span> <span class="keyword">if</span>(newVnode.<span class="property">text</span> != <span class="literal">undefined</span> &amp;&amp; (oldVnode.<span class="property">children</span> == <span class="literal">undefined</span> || oldVnode.<span class="property">children</span>.<span class="property">length</span> ==<span class="number">0</span>)) &#123;</span><br><span class="line">         <span class="comment">//这种分支说明新节点有文字老节点有子节点,只需要暴力将新节点的文字插入老节点即可,</span></span><br><span class="line">         <span class="comment">//老节点的子节点会被替换</span></span><br><span class="line">         <span class="keyword">if</span> (newVnode.<span class="property">text</span> != oldVnode.<span class="property">text</span>) &#123;</span><br><span class="line">             oldVnode.<span class="property">elm</span>.<span class="property">innerText</span> = newVnode.<span class="property">text</span></span><br><span class="line">         &#125; </span><br><span class="line">     &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">         <span class="keyword">if</span> (oldVnode.<span class="property">children</span> != <span class="literal">undefined</span> &amp;&amp; oldVnode.<span class="property">children</span>.<span class="property">length</span> != <span class="number">0</span>) &#123;</span><br><span class="line">             <span class="comment">//新老文字均有子节点,diff算法精髓,请听下回分解</span></span><br><span class="line">         &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">             <span class="comment">//此时是新节点有子节点而老节点有文字,直接插入子节点并不能消除文字</span></span><br><span class="line">             oldVnode.<span class="property">elm</span>.<span class="property">innerHTML</span> = <span class="string">&#x27;&#x27;</span></span><br><span class="line">             <span class="comment">//要使用循环去创建每一个子节点 children[i] 是一个 Vnode</span></span><br><span class="line">             <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; oldVnode.<span class="property">children</span>.<span class="property">length</span>; i++) &#123;</span><br><span class="line">                 <span class="keyword">let</span> dom = <span class="title function_">createElement</span>(oldVnode.<span class="property">children</span>[i])</span><br><span class="line">                 <span class="comment">//将真实dom挂在到elm上</span></span><br><span class="line">                 oldVnode.<span class="property">elm</span>.<span class="title function_">appendChild</span>(dom)</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//不是同一个节点,暴力插新删旧</span></span><br><span class="line">        <span class="keyword">let</span> newVnodeElm = <span class="title function_">createElement</span>(newVnode)</span><br><span class="line">        <span class="keyword">if</span>(oldVnode.<span class="property">elm</span>.<span class="property">parentNode</span> &amp;&amp; newVnodeElm)&#123;</span><br><span class="line">            oldVnode.<span class="property">elm</span>.<span class="property">parentNode</span>.<span class="title function_">insertBefore</span>(newVnodeElm,oldVnode.<span class="property">elm</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//删除老节点</span></span><br><span class="line">        oldVnode.<span class="property">elm</span>.<span class="property">parentNode</span>.<span class="title function_">removeChild</span>(oldVnode.<span class="property">elm</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>ccc因为最近的三一志愿者和期中考时间比较紧张啊,但还是希望能保证两三天一篇学习笔记吧</p>
-<blockquote>
-<p>重新学习vue3第三天<br>写于寝室</p>
-</blockquote>
-
+        <h2 id="patch函数的假补全"><a href="#patch函数的假补全" class="headerlink" title="patch函数的假补全"></a>patch函数的<del>假</del>补全</h2><p> 补全一下前一篇博客中新旧节点是同一个节点的代码</p>
+        
       
 
       
@@ -180,6 +256,25 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">vue源码</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">diff算法</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">patch</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -610,6 +705,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">diff算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">patch</a>
               </li>
             
             <div class="clearfix"></div>

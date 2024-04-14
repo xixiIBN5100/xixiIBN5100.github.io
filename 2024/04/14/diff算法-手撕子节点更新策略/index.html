@@ -6,17 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>Archives: 2024/4 | 离谱blog</title>
+  <title>diff算法--手撕子节点更新策略 | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="超级小白的博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="离谱blog">
-<meta property="og:url" content="http://xixiibn5100.github.io/archives/2024/04/index.html">
+  <meta name="description" content="子节点更新策略当patch的时候新旧节点都含有子节点的时候,需要找到旧节点中可以被复用的子节点.封装一个函数,采用双指针法遍历虚拟dom树,找到可以复用的节点,接下来我们来手撕一下updateChildren()函数    值得一提的是,因为时间和能力有限,只能最大限度的还原此函数,只展示函数中最有魅力的算法精髓,对于一些繁琐的边界判断,可能会有所疏忽">
+<meta property="og:type" content="article">
+<meta property="og:title" content="diff算法--手撕子节点更新策略">
+<meta property="og:url" content="http://xixiibn5100.github.io/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="超级小白的博客">
+<meta property="og:description" content="子节点更新策略当patch的时候新旧节点都含有子节点的时候,需要找到旧节点中可以被复用的子节点.封装一个函数,采用双指针法遍历虚拟dom树,找到可以复用的节点,接下来我们来手撕一下updateChildren()函数    值得一提的是,因为时间和能力有限,只能最大限度的还原此函数,只展示函数中最有魅力的算法精髓,对于一些繁琐的边界判断,可能会有所疏忽">
 <meta property="og:locale">
+<meta property="og:image" content="http://xixiibn5100.github.io/assets/img/diff.png">
+<meta property="article:published_time" content="2024-04-14T06:21:41.000Z">
+<meta property="article:modified_time" content="2024-04-14T09:25:25.249Z">
 <meta property="article:author" content="xixiIBN5100">
+<meta property="article:tag" content="vue源码">
+<meta property="article:tag" content="diff算法">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://xixiibn5100.github.io/assets/img/diff.png">
   
     <link rel="alternative" href="/atom.xml" title="离谱blog" type="application/atom+xml">
   
@@ -144,36 +150,51 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-diff算法-手撕子节点更新策略" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      diff算法--手撕子节点更新策略
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2024" class="archive-year">2024</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/" class="archive-article-date">
+
+        
+        <a href="/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/" class="archive-article-date">
   	<time datetime="2024-04-14T06:21:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-14</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/">diff算法--手撕子节点更新策略</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="子节点更新策略"><a href="#子节点更新策略" class="headerlink" title="子节点更新策略"></a>子节点更新策略</h2><p>当patch的时候新旧节点都含有子节点的时候,需要找到旧节点中可以被复用的子节点.<br>封装一个函数,采用双指针法遍历虚拟dom树,找到可以复用的节点,接下来我们来手撕一下updateChildren()函数  </p>
+<blockquote>
+<p>值得一提的是,因为时间和能力有限,只能最大限度的还原此函数,只展示函数中最有魅力的算法精髓,对于一些繁琐的边界判断,可能会有所疏忽  </p>
+</blockquote>
+<span id="more"></span>
 
-        <div class="article-info info-on-right">
-          
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">updateChildren</span>(<span class="params">parentElm,oldCh,newCh</span>) &#123;</span><br><span class="line">    <span class="comment">// 初始化</span></span><br><span class="line">    <span class="keyword">let</span> newStartIdx = <span class="number">0</span></span><br><span class="line">    <span class="keyword">let</span> newEndIdx = newCh.<span class="property">length</span> - <span class="number">1</span></span><br><span class="line">    <span class="keyword">let</span> oldStartIdx = <span class="number">0</span></span><br><span class="line">    <span class="keyword">let</span> oldEndIdx = oldCh.<span class="property">length</span> - <span class="number">1</span></span><br><span class="line">    <span class="keyword">let</span> newStartVnode = newCh[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">let</span> oldStartVnode = oldCh[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">let</span> newEndVnode = newCh[newEndIdx]</span><br><span class="line">    <span class="keyword">let</span> oldEndVnode = oldCh[oldEndIdx]</span><br><span class="line">    <span class="keyword">let</span> keyMap = &#123;&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//大循环</span></span><br><span class="line">    <span class="keyword">while</span>(newStartIdx &lt;= newEndIdx &amp;&amp; oldStartIdx &lt;= oldEndIdx) &#123;</span><br><span class="line">        <span class="comment">//先判定改节点是否被处理过</span></span><br><span class="line">        <span class="keyword">if</span> (oldStartVnode == <span class="literal">null</span>) &#123;</span><br><span class="line">            oldstartVnode = oldCh[++oldStartIdx];</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (oldEndVnode == <span class="literal">null</span>) &#123;</span><br><span class="line">            oldEndVnode = oldCh[--oldEndId];</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (oldStartVnode == <span class="literal">null</span>) &#123;</span><br><span class="line">            oldStartVnode = oldCh[++oldStartIdx];</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (oldEndVnode == <span class="literal">null</span>) &#123;</span><br><span class="line">            oldEndVnode = oldCh[--oldEndIdx];</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 前前命中</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="title function_">checkSameVnode</span>(oldStartVnode, newStartVnode)) &#123;</span><br><span class="line">                <span class="title function_">patch</span>(oldStartVnode, newStartVnode)</span><br><span class="line">                oldStartVnode = oldCh[++oldStartIdx]</span><br><span class="line">                newStartVnode = newCh[++newStartIdx]</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">checkSameVnode</span>(oldEndVnode, newEndVnode)) &#123;</span><br><span class="line">                <span class="comment">//后后命中</span></span><br><span class="line">                <span class="title function_">patch</span>(oldEndVnode, newEndVnode)</span><br><span class="line">                oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">                newEndVnode = newCh[--newEndIdx]</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">checkSameVnode</span>(oldStartVnode, newEndVnode)) &#123;</span><br><span class="line">                <span class="comment">//新后旧前命中,移动节点</span></span><br><span class="line">                <span class="title function_">patch</span>(oldStartVnode, newEndVnode)</span><br><span class="line">                parentElm.<span class="title function_">insertBefore</span>(oldStartVnode.<span class="property">elm</span>, oldEndVnode.<span class="property">elm</span>.<span class="property">nextSibling</span>)</span><br><span class="line">                oldStartVnode = oldCh[++oldStartIdx]</span><br><span class="line">                newEndVnode = newCh[--newEndIdx]</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">checkSameVnode</span>(oldEndVnode, newStartVnode)) &#123;</span><br><span class="line">                <span class="comment">//新前与旧后命中,移动节点</span></span><br><span class="line">                <span class="title function_">patch</span>(oldEndVnode, newStartVnode)</span><br><span class="line">                parentElm.<span class="title function_">insertBefore</span>(oldEndVnode.<span class="property">elm</span>, oldStartVnode.<span class="property">elm</span>)</span><br><span class="line">                oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">                newStartVnode = newCh[++newStartIdx]</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//都没命中怎么办,维护一个key映射map找</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">let</span> i = oldStartIdx; i &lt;= oldEndIdx; i++) &#123;</span><br><span class="line">                    <span class="keyword">const</span> key = oldCh[i].<span class="property">key</span></span><br><span class="line">                    <span class="keyword">if</span> (key) &#123;</span><br><span class="line">                        keyMap[key] = i</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">const</span> findMoveIdx = keyMap[newStartVnode.<span class="property">key</span>]</span><br><span class="line">                <span class="keyword">if</span> (findMoveIdx == <span class="literal">undefined</span>) &#123;</span><br><span class="line">                    <span class="comment">//即在map映射中没有找到,则说明是新加节点</span></span><br><span class="line">                    parentElm.<span class="title function_">insertBefore</span>(<span class="title function_">createElement</span>(newEndVnode), oldStartVnode.<span class="property">elm</span>)</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">const</span> elmTomove = oldCh[findMoveIdx]</span><br><span class="line">                    <span class="title function_">patch</span>(elmTomove, newStartVnode)</span><br><span class="line">                    oldCh[findMoveIdx] = <span class="literal">undefined</span><span class="comment">//表示该节点已经被处理完</span></span><br><span class="line">                    parentElm.<span class="title function_">insertBefore</span>(elmTomove, oldStartVnode.<span class="property">elm</span>)</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//只移动新头指针</span></span><br><span class="line">                newStartVnode = [++newStartIdx]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//循环结束后,处理剩余未处理节点,此时只可能是新增节点或者删除节点</span></span><br><span class="line">    <span class="keyword">if</span>(oldStartIdx &lt;= oldEndIdx) &#123;</span><br><span class="line">        <span class="comment">//删除节点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">let</span> i = oldStartIdx;i &lt;= oldEndIdx; i++) &#123;</span><br><span class="line">            parentElm.<span class="title function_">removeChild</span>(oldCh[i].<span class="property">elm</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (newStartIdx &lt;= oldEndIdx) &#123;</span><br><span class="line">        <span class="comment">//新增节点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">let</span> i = newStartIdx; i &lt;= newEndIdx;i++)&#123;</span><br><span class="line">            parentElm.<span class="title function_">insertBefore</span>(<span class="title function_">createElement</span>(newCh[i]),<span class="title function_">oldCh</span>(oldStartIdx))</span><br><span class="line">            <span class="comment">//为什么是oldStartIdx? 当循环结束进入这个分支的时候 oldStartIdx已经在oldEndIdx的下方,插入这个节点之前才能保证顺序一致</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>到此为止,我们已经将vue2 diff算法中的所有内容手撕完毕,不难发现,patch()和updateChildren()两个函数的相互调用是本算法的核心部分,实实在在做到的优化性能的效果</p>
+<p>但是显而易见,该算法即使新旧节点大部分相同的情况下,还是会遍历相同的子节点,还是有优化的空间 </p>
+<p>所以在vue3中,新的diff算法使用了性能更高的求最长递增子序列算法,给每个节点打上静态标记,从而得到更好的性能.  </p>
+<p><del>如果时间够这几天看看能不能手撕</del>  </p>
+<p>最后的最后 贴张图</p>
+<p><img src="/assets/img/diff.png"></p>
+<blockquote>
+<p>重新学习vue3第五天<br>写于书咖</p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -189,183 +210,119 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/12/diff%E7%AE%97%E6%B3%95-patch%E5%87%BD%E6%95%B0%E7%9A%84%E8%A1%A5%E5%85%A8/" class="archive-article-date">
-  	<time datetime="2024-04-12T13:37:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-12</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2024/04/12/diff%E7%AE%97%E6%B3%95-patch%E5%87%BD%E6%95%B0%E7%9A%84%E8%A1%A5%E5%85%A8/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">diff算法--patch函数补全</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/12/diff%E7%AE%97%E6%B3%95-patch%E5%87%BD%E6%95%B0%E7%9A%84%E8%A1%A5%E5%85%A8/">diff算法--patch函数补全</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">vue源码</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">diff算法</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">patch</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5"><span class="toc-number">1.</span> <span class="toc-text">子节点更新策略</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+        
+    </div>
+</aside>
+
+
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/10/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95pacth%E5%87%BD%E6%95%B0/" class="archive-article-date">
-  	<time datetime="2024-04-10T09:30:59.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-10</time>
-</a>
-        </div>
-    	 
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/10/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95pacth%E5%87%BD%E6%95%B0/">diff算法--手撕patch函数</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">vue源码</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">diff算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/09/%E8%99%9A%E6%8B%9Fdom%E5%92%8Ch%E5%87%BD%E6%95%B0/" class="archive-article-date">
-  	<time datetime="2024-04-09T12:51:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-09</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/09/%E8%99%9A%E6%8B%9Fdom%E5%92%8Ch%E5%87%BD%E6%95%B0/">虚拟dom和h函数</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">vue源码</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/08/%E5%A4%8D%E6%B4%BB%E8%B5%9B%E6%89%93%E8%B5%A2%E4%BA%86/" class="archive-article-date">
-  	<time datetime="2024-04-08T06:56:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/08/%E5%A4%8D%E6%B4%BB%E8%B5%9B%E6%89%93%E8%B5%A2%E4%BA%86/">复活赛打赢了</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">新的开始</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -385,8 +342,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
