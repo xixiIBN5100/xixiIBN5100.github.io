@@ -6,24 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>diff算法--patch函数补全 | 离谱blog</title>
+  <title>Tag: 响应式 | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="patch函数的假补全 补全一下前一篇博客中新旧节点是同一个节点的代码">
-<meta property="og:type" content="article">
-<meta property="og:title" content="diff算法--patch函数补全">
-<meta property="og:url" content="http://xixiibn5100.github.io/2024/04/12/diff%E7%AE%97%E6%B3%95-patch%E5%87%BD%E6%95%B0%E7%9A%84%E8%A1%A5%E5%85%A8/index.html">
+  <meta name="description" content="超级小白的博客">
+<meta property="og:type" content="website">
+<meta property="og:title" content="离谱blog">
+<meta property="og:url" content="http://xixiibn5100.github.io/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="patch函数的假补全 补全一下前一篇博客中新旧节点是同一个节点的代码">
+<meta property="og:description" content="超级小白的博客">
 <meta property="og:locale">
-<meta property="og:image" content="http://xixiibn5100.github.io/assets/img/patch2.png">
-<meta property="article:published_time" content="2024-04-12T13:37:49.000Z">
-<meta property="article:modified_time" content="2024-04-14T08:23:02.562Z">
 <meta property="article:author" content="xixiIBN5100">
-<meta property="article:tag" content="vue源码">
-<meta property="article:tag" content="diff算法">
-<meta property="article:tag" content="patch">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://xixiibn5100.github.io/assets/img/patch2.png">
   
     <link rel="alternative" href="/atom.xml" title="离谱blog" type="application/atom+xml">
   
@@ -151,184 +144,68 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-diff算法-patch函数的补全" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      diff算法--patch函数补全
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2024" class="archive-year">2024</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2024/04/17/Vue3%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/" class="archive-article-date">
+  	<time datetime="2024-04-17T11:18:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-17</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2024/04/17/Vue3%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/">Vue3的响应式原理</a>
     </h1>
   
 
-        
-        <a href="/2024/04/12/diff%E7%AE%97%E6%B3%95-patch%E5%87%BD%E6%95%B0%E7%9A%84%E8%A1%A5%E5%85%A8/" class="archive-article-date">
-  	<time datetime="2024-04-12T13:37:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="patch函数的假补全"><a href="#patch函数的假补全" class="headerlink" title="patch函数的假补全"></a>patch函数的<del>假</del>补全</h2><p> 补全一下前一篇博客中新旧节点是同一个节点的代码</p>
-<span id="more"></span>
-
-<p> <img src="/assets/img/patch2.png"><br> 即图片中红色部分</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">patch</span>(<span class="params">oldVnode,newVnode</span>)&#123;</span><br><span class="line">    <span class="comment">//首先判断老节点是虚拟dom还是真实dom</span></span><br><span class="line">    <span class="keyword">if</span>(oldVnode.<span class="property">sel</span> == <span class="string">&#x27;&#x27;</span> || oldVnode.<span class="property">sel</span> == <span class="literal">undefined</span>)&#123;</span><br><span class="line">        <span class="comment">//如果不是虚拟节点,则用vnode函数创建出虚拟节点(vnode函数上篇博客已经详细讲述过)</span></span><br><span class="line">        oldVnode = <span class="title function_">vnode</span>(oldVnode.<span class="property">tagName</span>.<span class="title function_">toLowerCase</span>(),&#123;&#125;,[],<span class="literal">undefined</span>,oldVnode)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(oldVnode.<span class="property">sel</span> == newVnode.<span class="property">sel</span> &amp;&amp; oldVnode.<span class="property">key</span> == newVnode.<span class="property">key</span>)&#123;</span><br><span class="line">        <span class="comment">//说明这俩是同一个节点!! 就是这个分支</span></span><br><span class="line">     <span class="keyword">if</span>(oldVnode == newVnode)&#123;</span><br><span class="line">         <span class="keyword">return</span>;<span class="comment">//说明新旧节点在内存中是同一块位置,直接返回即可</span></span><br><span class="line">     &#125;<span class="keyword">else</span> <span class="keyword">if</span>(newVnode.<span class="property">text</span> != <span class="literal">undefined</span> &amp;&amp; (oldVnode.<span class="property">children</span> == <span class="literal">undefined</span> || oldVnode.<span class="property">children</span>.<span class="property">length</span> ==<span class="number">0</span>)) &#123;</span><br><span class="line">         <span class="comment">//这种分支说明新节点有文字老节点有子节点,只需要暴力将新节点的文字插入老节点即可,</span></span><br><span class="line">         <span class="comment">//老节点的子节点会被替换</span></span><br><span class="line">         <span class="keyword">if</span> (newVnode.<span class="property">text</span> != oldVnode.<span class="property">text</span>) &#123;</span><br><span class="line">             oldVnode.<span class="property">elm</span>.<span class="property">innerText</span> = newVnode.<span class="property">text</span></span><br><span class="line">         &#125; </span><br><span class="line">     &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">         <span class="keyword">if</span> (oldVnode.<span class="property">children</span> != <span class="literal">undefined</span> &amp;&amp; oldVnode.<span class="property">children</span>.<span class="property">length</span> != <span class="number">0</span>) &#123;</span><br><span class="line">             <span class="comment">//新老文字均有子节点,diff算法精髓,请听下回分解</span></span><br><span class="line">         &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">             <span class="comment">//此时是新节点有子节点而老节点有文字,直接插入子节点并不能消除文字</span></span><br><span class="line">             oldVnode.<span class="property">elm</span>.<span class="property">innerHTML</span> = <span class="string">&#x27;&#x27;</span></span><br><span class="line">             <span class="comment">//要使用循环去创建每一个子节点 children[i] 是一个 Vnode</span></span><br><span class="line">             <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; oldVnode.<span class="property">children</span>.<span class="property">length</span>; i++) &#123;</span><br><span class="line">                 <span class="keyword">let</span> dom = <span class="title function_">createElement</span>(oldVnode.<span class="property">children</span>[i])</span><br><span class="line">                 <span class="comment">//将真实dom挂在到elm上</span></span><br><span class="line">                 oldVnode.<span class="property">elm</span>.<span class="title function_">appendChild</span>(dom)</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//不是同一个节点,暴力插新删旧</span></span><br><span class="line">        <span class="keyword">let</span> newVnodeElm = <span class="title function_">createElement</span>(newVnode)</span><br><span class="line">        <span class="keyword">if</span>(oldVnode.<span class="property">elm</span>.<span class="property">parentNode</span> &amp;&amp; newVnodeElm)&#123;</span><br><span class="line">            oldVnode.<span class="property">elm</span>.<span class="property">parentNode</span>.<span class="title function_">insertBefore</span>(newVnodeElm,oldVnode.<span class="property">elm</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//删除老节点</span></span><br><span class="line">        oldVnode.<span class="property">elm</span>.<span class="property">parentNode</span>.<span class="title function_">removeChild</span>(oldVnode.<span class="property">elm</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>ccc因为最近的三一志愿者和期中考时间比较紧张啊,但还是希望能保证两三天一篇学习笔记吧</p>
-<blockquote>
-<p>重新学习vue3第四天<br>写于寝室</p>
-</blockquote>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">vue源码</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">diff算法</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">响应式</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">patch</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/04/12/diff%E7%AE%97%E6%B3%95-patch%E5%87%BD%E6%95%B0%E7%9A%84%E8%A1%A5%E5%85%A8/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          diff算法--手撕子节点更新策略
-        
-      </div>
-    </a>
   
   
-    <a href="/2024/04/10/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95pacth%E5%87%BD%E6%95%B0/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">diff算法--手撕patch函数</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#patch%E5%87%BD%E6%95%B0%E7%9A%84%E5%81%87%E8%A1%A5%E5%85%A8"><span class="toc-number">1.</span> <span class="toc-text">patch函数的假补全</span></a></li></ol>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
-  
+    
 
 
           </div>
@@ -348,9 +225,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,

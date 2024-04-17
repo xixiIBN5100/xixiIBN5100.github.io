@@ -6,24 +6,24 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>diff算法--patch函数补全 | 离谱blog</title>
+  <title>Vue3的响应式原理 | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="patch函数的假补全 补全一下前一篇博客中新旧节点是同一个节点的代码">
+  <meta name="description" content="Vue3的响应式原理">
 <meta property="og:type" content="article">
-<meta property="og:title" content="diff算法--patch函数补全">
-<meta property="og:url" content="http://xixiibn5100.github.io/2024/04/12/diff%E7%AE%97%E6%B3%95-patch%E5%87%BD%E6%95%B0%E7%9A%84%E8%A1%A5%E5%85%A8/index.html">
+<meta property="og:title" content="Vue3的响应式原理">
+<meta property="og:url" content="http://xixiibn5100.github.io/2024/04/17/Vue3%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="patch函数的假补全 补全一下前一篇博客中新旧节点是同一个节点的代码">
+<meta property="og:description" content="Vue3的响应式原理">
 <meta property="og:locale">
-<meta property="og:image" content="http://xixiibn5100.github.io/assets/img/patch2.png">
-<meta property="article:published_time" content="2024-04-12T13:37:49.000Z">
-<meta property="article:modified_time" content="2024-04-14T08:23:02.562Z">
+<meta property="og:image" content="http://xixiibn5100.github.io/assets/img/active.png">
+<meta property="article:published_time" content="2024-04-17T11:18:15.000Z">
+<meta property="article:modified_time" content="2024-04-17T13:10:38.650Z">
 <meta property="article:author" content="xixiIBN5100">
-<meta property="article:tag" content="vue源码">
-<meta property="article:tag" content="diff算法">
-<meta property="article:tag" content="patch">
+<meta property="article:tag" content="vue">
+<meta property="article:tag" content="响应式">
+<meta property="article:tag" content="源码">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://xixiibn5100.github.io/assets/img/patch2.png">
+<meta name="twitter:image" content="http://xixiibn5100.github.io/assets/img/active.png">
   
     <link rel="alternative" href="/atom.xml" title="离谱blog" type="application/atom+xml">
   
@@ -151,34 +151,41 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-diff算法-patch函数的补全" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Vue3的响应式原理" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      diff算法--patch函数补全
+      Vue3的响应式原理
     </h1>
   
 
         
-        <a href="/2024/04/12/diff%E7%AE%97%E6%B3%95-patch%E5%87%BD%E6%95%B0%E7%9A%84%E8%A1%A5%E5%85%A8/" class="archive-article-date">
-  	<time datetime="2024-04-12T13:37:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-12</time>
+        <a href="/2024/04/17/Vue3%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/" class="archive-article-date">
+  	<time datetime="2024-04-17T11:18:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-17</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="patch函数的假补全"><a href="#patch函数的假补全" class="headerlink" title="patch函数的假补全"></a>patch函数的<del>假</del>补全</h2><p> 补全一下前一篇博客中新旧节点是同一个节点的代码</p>
-<span id="more"></span>
+        <h2 id="Vue3的响应式原理"><a href="#Vue3的响应式原理" class="headerlink" title="Vue3的响应式原理"></a>Vue3的响应式原理</h2><span id="more"></span>
 
-<p> <img src="/assets/img/patch2.png"><br> 即图片中红色部分</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">patch</span>(<span class="params">oldVnode,newVnode</span>)&#123;</span><br><span class="line">    <span class="comment">//首先判断老节点是虚拟dom还是真实dom</span></span><br><span class="line">    <span class="keyword">if</span>(oldVnode.<span class="property">sel</span> == <span class="string">&#x27;&#x27;</span> || oldVnode.<span class="property">sel</span> == <span class="literal">undefined</span>)&#123;</span><br><span class="line">        <span class="comment">//如果不是虚拟节点,则用vnode函数创建出虚拟节点(vnode函数上篇博客已经详细讲述过)</span></span><br><span class="line">        oldVnode = <span class="title function_">vnode</span>(oldVnode.<span class="property">tagName</span>.<span class="title function_">toLowerCase</span>(),&#123;&#125;,[],<span class="literal">undefined</span>,oldVnode)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(oldVnode.<span class="property">sel</span> == newVnode.<span class="property">sel</span> &amp;&amp; oldVnode.<span class="property">key</span> == newVnode.<span class="property">key</span>)&#123;</span><br><span class="line">        <span class="comment">//说明这俩是同一个节点!! 就是这个分支</span></span><br><span class="line">     <span class="keyword">if</span>(oldVnode == newVnode)&#123;</span><br><span class="line">         <span class="keyword">return</span>;<span class="comment">//说明新旧节点在内存中是同一块位置,直接返回即可</span></span><br><span class="line">     &#125;<span class="keyword">else</span> <span class="keyword">if</span>(newVnode.<span class="property">text</span> != <span class="literal">undefined</span> &amp;&amp; (oldVnode.<span class="property">children</span> == <span class="literal">undefined</span> || oldVnode.<span class="property">children</span>.<span class="property">length</span> ==<span class="number">0</span>)) &#123;</span><br><span class="line">         <span class="comment">//这种分支说明新节点有文字老节点有子节点,只需要暴力将新节点的文字插入老节点即可,</span></span><br><span class="line">         <span class="comment">//老节点的子节点会被替换</span></span><br><span class="line">         <span class="keyword">if</span> (newVnode.<span class="property">text</span> != oldVnode.<span class="property">text</span>) &#123;</span><br><span class="line">             oldVnode.<span class="property">elm</span>.<span class="property">innerText</span> = newVnode.<span class="property">text</span></span><br><span class="line">         &#125; </span><br><span class="line">     &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">         <span class="keyword">if</span> (oldVnode.<span class="property">children</span> != <span class="literal">undefined</span> &amp;&amp; oldVnode.<span class="property">children</span>.<span class="property">length</span> != <span class="number">0</span>) &#123;</span><br><span class="line">             <span class="comment">//新老文字均有子节点,diff算法精髓,请听下回分解</span></span><br><span class="line">         &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">             <span class="comment">//此时是新节点有子节点而老节点有文字,直接插入子节点并不能消除文字</span></span><br><span class="line">             oldVnode.<span class="property">elm</span>.<span class="property">innerHTML</span> = <span class="string">&#x27;&#x27;</span></span><br><span class="line">             <span class="comment">//要使用循环去创建每一个子节点 children[i] 是一个 Vnode</span></span><br><span class="line">             <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; oldVnode.<span class="property">children</span>.<span class="property">length</span>; i++) &#123;</span><br><span class="line">                 <span class="keyword">let</span> dom = <span class="title function_">createElement</span>(oldVnode.<span class="property">children</span>[i])</span><br><span class="line">                 <span class="comment">//将真实dom挂在到elm上</span></span><br><span class="line">                 oldVnode.<span class="property">elm</span>.<span class="title function_">appendChild</span>(dom)</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//不是同一个节点,暴力插新删旧</span></span><br><span class="line">        <span class="keyword">let</span> newVnodeElm = <span class="title function_">createElement</span>(newVnode)</span><br><span class="line">        <span class="keyword">if</span>(oldVnode.<span class="property">elm</span>.<span class="property">parentNode</span> &amp;&amp; newVnodeElm)&#123;</span><br><span class="line">            oldVnode.<span class="property">elm</span>.<span class="property">parentNode</span>.<span class="title function_">insertBefore</span>(newVnodeElm,oldVnode.<span class="property">elm</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//删除老节点</span></span><br><span class="line">        oldVnode.<span class="property">elm</span>.<span class="property">parentNode</span>.<span class="title function_">removeChild</span>(oldVnode.<span class="property">elm</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>ccc因为最近的三一志愿者和期中考时间比较紧张啊,但还是希望能保证两三天一篇学习笔记吧</p>
+<h3 id="Proxy代理对象"><a href="#Proxy代理对象" class="headerlink" title="Proxy代理对象"></a>Proxy代理对象</h3><p>什么是Proxy代理的对象?  </p>
 <blockquote>
-<p>重新学习vue3第四天<br>写于寝室</p>
+<p>在 JavaScript 中，Proxy 是一种用于创建代理对象的内置对象。代理对象允许你在访问对象之前添加自定义行为，比如拦截并修改对象的默认行为。<br>具体来说，Proxy 可以用来包装另一个对象，并拦截该对象的操作，例如属性访问、赋值、函数调用等。通过定义代理对象的处理程序（handler），你可以自定义对原始对象的操作。</p>
+</blockquote>
+<p>人话就是不直接操作对象,而是用方法来操作对象</p>
+<h3 id="手撕reactive"><a href="#手撕reactive" class="headerlink" title="手撕reactive"></a>手撕reactive</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> reactive = &lt;T <span class="keyword">extends</span> <span class="title class_">Object</span>&gt;<span class="function">(<span class="params">target:T</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Proxy</span>(target,&#123;</span><br><span class="line">        <span class="title function_">get</span>(<span class="params">target,key,reciver</span>)&#123;</span><br><span class="line">            <span class="keyword">let</span> res = <span class="title class_">Reflect</span>.<span class="title function_">get</span>(target,key,reciver)</span><br><span class="line">            <span class="title function_">track</span>(target,key)<span class="comment">//收集依赖</span></span><br><span class="line">            <span class="keyword">return</span> res</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="title function_">set</span>(<span class="params">target,key,value,reciver</span>)&#123;</span><br><span class="line">            <span class="keyword">let</span> res = <span class="title class_">Reflect</span>.<span class="title function_">set</span>(target,key,value,reciver)<span class="comment">//该函数会返回boolen值</span></span><br><span class="line">            <span class="title function_">trigger</span>(target,key)<span class="comment">//更新依赖</span></span><br><span class="line">            <span class="keyword">return</span> res</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="effect-track和trigger实现"><a href="#effect-track和trigger实现" class="headerlink" title="effect,track和trigger实现"></a>effect,track和trigger实现</h3><p>track()用于依赖收集,trigger()用于依赖的更新  </p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> activeEffect;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">effect</span> = (<span class="params">fn: <span class="built_in">Function</span></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> _effect = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        activeEffect = _effect</span><br><span class="line">        <span class="title function_">fn</span>()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_">_effect</span>()</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//简单版</span></span><br><span class="line"><span class="keyword">const</span> targetMap = <span class="keyword">new</span> <span class="title class_">WeakMap</span>() <span class="comment">//创建一个Map,WaekMap的key只能是一个对象  </span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">track</span> = (<span class="params">target,key</span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> depsMap = targetMap.<span class="title function_">get</span>(target)</span><br><span class="line">    <span class="keyword">if</span>(!depsMap)&#123;</span><br><span class="line">        <span class="keyword">let</span> depsMap = <span class="keyword">new</span> <span class="title class_">Map</span>()</span><br><span class="line">        targetMap.<span class="title function_">set</span>(target,depsMap)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> deps = depsMap.<span class="title function_">get</span>(key)</span><br><span class="line">    <span class="keyword">if</span>(!deps)&#123;</span><br><span class="line">        deps = <span class="keyword">new</span> <span class="title class_">Set</span>()</span><br><span class="line">    &#125;</span><br><span class="line">    deps.<span class="title function_">add</span>(activeEffect)</span><br><span class="line">    <span class="comment">//需要说明的是, activeEffect 记录了当前活跃的响应式函数。这样可以确保在数据变化时能够及时通知相关的响应式函数进行更新。</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">trigger</span> = (<span class="params">target,key</span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> depsMap = targetMap.<span class="title function_">get</span>(target)</span><br><span class="line">    <span class="keyword">if</span>(!depsMap)&#123;</span><br><span class="line">        <span class="keyword">let</span> depsMap = <span class="keyword">new</span> <span class="title class_">Map</span>()</span><br><span class="line">        targetMap.<span class="title function_">set</span>(target,depsMap)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> deps = depsMap.<span class="title function_">get</span>(key)</span><br><span class="line">    <span class="keyword">if</span>(!deps)&#123;</span><br><span class="line">        deps = <span class="keyword">new</span> <span class="title class_">Set</span>()</span><br><span class="line">    &#125;</span><br><span class="line">    deps.<span class="title function_">forEach</span>(<span class="function"><span class="params">effect</span> =&gt;</span> <span class="title function_">effect</span>())<span class="comment">//遍历响应式函数并执行,引起视图更新等等</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Set集合中储存了和key有关的响应式函数,一旦属性发生改变,就会触发trigger()</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="/assets/img/active.png"><br><del>源码好难</del></p>
+<blockquote>
+<p>重新学习vue第七天<br>写于电子阅览室</p>
 </blockquote>
 
       
@@ -193,15 +200,15 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">vue源码</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">diff算法</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">响应式</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">patch</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
         		</li>
       		
 		</ul>
@@ -257,7 +264,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/04/12/diff%E7%AE%97%E6%B3%95-patch%E5%87%BD%E6%95%B0%E7%9A%84%E8%A1%A5%E5%85%A8/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/04/17/Vue3%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -271,18 +278,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          diff算法--手撕子节点更新策略
-        
-      </div>
-    </a>
   
-  
-    <a href="/2024/04/10/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95pacth%E5%87%BD%E6%95%B0/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">diff算法--手撕patch函数</div>
+    <a href="/2024/04/15/%E9%87%8D%E8%AF%86Ref/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">重识Ref</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -309,7 +307,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#patch%E5%87%BD%E6%95%B0%E7%9A%84%E5%81%87%E8%A1%A5%E5%85%A8"><span class="toc-number">1.</span> <span class="toc-text">patch函数的假补全</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue3%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">Vue3的响应式原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Proxy%E4%BB%A3%E7%90%86%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.1.</span> <span class="toc-text">Proxy代理对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%8B%E6%92%95reactive"><span class="toc-number">1.2.</span> <span class="toc-text">手撕reactive</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#effect-track%E5%92%8Ctrigger%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.3.</span> <span class="toc-text">effect,track和trigger实现</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
