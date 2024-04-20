@@ -6,16 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>Archives: 2023/10 | 离谱blog</title>
+  <title>Vue3中的computed函数 | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="超级小白的博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="离谱blog">
-<meta property="og:url" content="http://xixiibn5100.github.io/archives/2023/10/index.html">
+  <meta name="description" content="computed的使用和源码computed的使用computed有两种使用方式,一种接收一个对象,包含get(),set()函数,还有一种只接收一个getter()函数,但是用此方法返回的响应式属性是只读的(无set方法) 以下进行一个简单的小demo演示computed的基础用法 1234567891011const front &#x3D; ref(&amp;#x27;哈哈哈&amp;#x27;)const end">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue3中的computed函数">
+<meta property="og:url" content="http://xixiibn5100.github.io/2024/04/20/Vue3%E4%B8%AD%E7%9A%84computed%E5%87%BD%E6%95%B0/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="超级小白的博客">
+<meta property="og:description" content="computed的使用和源码computed的使用computed有两种使用方式,一种接收一个对象,包含get(),set()函数,还有一种只接收一个getter()函数,但是用此方法返回的响应式属性是只读的(无set方法) 以下进行一个简单的小demo演示computed的基础用法 1234567891011const front &#x3D; ref(&amp;#x27;哈哈哈&amp;#x27;)const end">
 <meta property="og:locale">
+<meta property="article:published_time" content="2024-04-20T08:28:27.000Z">
+<meta property="article:modified_time" content="2024-04-20T09:30:49.687Z">
 <meta property="article:author" content="xixiIBN5100">
+<meta property="article:tag" content="源码">
+<meta property="article:tag" content="computed">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="离谱blog" type="application/atom+xml">
@@ -144,49 +148,174 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Vue3中的computed函数" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2023" class="archive-year">2023</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2023/10/28/hello-world/" class="archive-article-date">
-  	<time datetime="2023-10-28T06:55:14.015Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-10-28</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/10/28/hello-world/">Hello world</a>
+    <h1 class="article-title" itemprop="name">
+      Vue3中的computed函数
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+        
+        <a href="/2024/04/20/Vue3%E4%B8%AD%E7%9A%84computed%E5%87%BD%E6%95%B0/" class="archive-article-date">
+  	<time datetime="2024-04-20T08:28:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="computed的使用和源码"><a href="#computed的使用和源码" class="headerlink" title="computed的使用和源码"></a>computed的使用和源码</h2><h3 id="computed的使用"><a href="#computed的使用" class="headerlink" title="computed的使用"></a>computed的使用</h3><p>computed有两种使用方式,一种接收一个对象,包含get(),set()函数,还有一种只接收一个getter()函数,但是用此方法返回的响应式属性是只读的(无set方法)</p>
+<p>以下进行一个简单的小demo演示computed的基础用法</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> front = <span class="title function_">ref</span>(<span class="string">&#x27;哈哈哈&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> end = <span class="title function_">ref</span>(<span class="string">&#x27;嘻嘻嘻&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> all = <span class="title function_">computed</span>(<span class="function">( ) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> front + end;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">//下面这种写法会报错,因为all具有只读属性</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">changeValue</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    all.<span class="property">value</span> = <span class="string">&#x27;啊吧吧吧吧&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h3 id="computed背后的原理"><a href="#computed背后的原理" class="headerlink" title="computed背后的原理"></a>computed背后的原理</h3><p>computed函数使用的脏值检测的机制,判断该属性的依赖是否发生变化,若发生变化,则重新计算属性,若没发生变化,则使用缓存中的值  </p>
+<p>一下对源码进行简单实现  </p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">computed</span> = (<span class="params"> getter:<span class="built_in">Function</span> </span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> _value = <span class="title function_">effect</span>(getter,&#123;</span><br><span class="line">        <span class="attr">scheduler</span>: <span class="function">() =&gt;</span> &#123; _dirty = <span class="literal">true</span> &#125;<span class="comment">//当依赖发生变化的时候,effect函数会使用scheduler来更新——dirty的值</span></span><br><span class="line">        <span class="comment">//关于如何实现</span></span><br><span class="line">        <span class="comment">//给effcet函数加上有scheduler函数的Options属性,当依赖发生变化的时候,如果含有此Options,则进行一次scheduler函数的调用</span></span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">let</span> _dirty = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">let</span> changeValue;</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">ComputedRefImpl</span> &#123;</span><br><span class="line">        <span class="keyword">get</span> <span class="title function_">value</span>()&#123;<span class="comment">//劫持value</span></span><br><span class="line">            <span class="keyword">if</span>(_dirty) &#123;</span><br><span class="line">                changeValue = <span class="title function_">_value</span>()</span><br><span class="line">                _dirty = <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> changeValue</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上就是computed的简单使用和大致原理</p>
+<blockquote>
+<p>重新学习Vue3 第八天<br>写于书咖</p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">computed</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/04/20/Vue3%E4%B8%AD%E7%9A%84computed%E5%87%BD%E6%95%B0/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2024/04/17/Vue3%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Vue3的响应式原理</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#computed%E7%9A%84%E4%BD%BF%E7%94%A8%E5%92%8C%E6%BA%90%E7%A0%81"><span class="toc-number">1.</span> <span class="toc-text">computed的使用和源码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#computed%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">1.1.</span> <span class="toc-text">computed的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#computed%E8%83%8C%E5%90%8E%E7%9A%84%E5%8E%9F%E7%90%86"><span class="toc-number">1.2.</span> <span class="toc-text">computed背后的原理</span></a></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -206,8 +335,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
