@@ -8,15 +8,15 @@
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
   <title>Vue3中的computed函数 | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="computed的使用和源码computed的使用computed有两种使用方式,一种接收一个对象,包含get(),set()函数,还有一种只接收一个getter()函数,但是用此方法返回的响应式属性是只读的(无set方法) 以下进行一个简单的小demo演示computed的基础用法 1234567891011const front &#x3D; ref(&amp;#x27;哈哈哈&amp;#x27;)const end">
+  <meta name="description" content="computed的使用和源码computed的使用computed有两种使用方式,一种接收一个对象,包含get(),set()函数,还有一种只接收一个getter()函数,但是用此方法返回的响应式属性是只读的(无set方法) 以下进行一个简单的小demo演示computed的基础用法">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Vue3中的computed函数">
 <meta property="og:url" content="http://xixiibn5100.github.io/2024/04/20/Vue3%E4%B8%AD%E7%9A%84computed%E5%87%BD%E6%95%B0/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="computed的使用和源码computed的使用computed有两种使用方式,一种接收一个对象,包含get(),set()函数,还有一种只接收一个getter()函数,但是用此方法返回的响应式属性是只读的(无set方法) 以下进行一个简单的小demo演示computed的基础用法 1234567891011const front &#x3D; ref(&amp;#x27;哈哈哈&amp;#x27;)const end">
+<meta property="og:description" content="computed的使用和源码computed的使用computed有两种使用方式,一种接收一个对象,包含get(),set()函数,还有一种只接收一个getter()函数,但是用此方法返回的响应式属性是只读的(无set方法) 以下进行一个简单的小demo演示computed的基础用法">
 <meta property="og:locale">
 <meta property="article:published_time" content="2024-04-20T08:28:27.000Z">
-<meta property="article:modified_time" content="2024-04-20T09:30:49.687Z">
+<meta property="article:modified_time" content="2024-04-20T09:31:44.146Z">
 <meta property="article:author" content="xixiIBN5100">
 <meta property="article:tag" content="源码">
 <meta property="article:tag" content="computed">
@@ -170,6 +170,8 @@
       
         <h2 id="computed的使用和源码"><a href="#computed的使用和源码" class="headerlink" title="computed的使用和源码"></a>computed的使用和源码</h2><h3 id="computed的使用"><a href="#computed的使用" class="headerlink" title="computed的使用"></a>computed的使用</h3><p>computed有两种使用方式,一种接收一个对象,包含get(),set()函数,还有一种只接收一个getter()函数,但是用此方法返回的响应式属性是只读的(无set方法)</p>
 <p>以下进行一个简单的小demo演示computed的基础用法</p>
+<span id="more"></span>
+
 <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> front = <span class="title function_">ref</span>(<span class="string">&#x27;哈哈哈&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> end = <span class="title function_">ref</span>(<span class="string">&#x27;嘻嘻嘻&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> all = <span class="title function_">computed</span>(<span class="function">( ) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> front + end;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">//下面这种写法会报错,因为all具有只读属性</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">changeValue</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    all.<span class="property">value</span> = <span class="string">&#x27;啊吧吧吧吧&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="computed背后的原理"><a href="#computed背后的原理" class="headerlink" title="computed背后的原理"></a>computed背后的原理</h3><p>computed函数使用的脏值检测的机制,判断该属性的依赖是否发生变化,若发生变化,则重新计算属性,若没发生变化,则使用缓存中的值  </p>
@@ -266,6 +268,15 @@
 
   
 <nav id="article-nav">
+  
+    <a href="/2024/04/20/Vue3%E4%B8%AD%E7%9A%84watch%E4%BE%A6%E5%90%AC%E5%99%A8/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Vue3中的watch侦听器
+        
+      </div>
+    </a>
   
   
     <a href="/2024/04/17/Vue3%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/" id="article-nav-older" class="article-nav-link-wrap">
@@ -438,6 +449,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">computed</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">watch</a>
               </li>
             
             <div class="clearfix"></div>
