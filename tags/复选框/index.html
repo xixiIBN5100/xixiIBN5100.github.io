@@ -6,21 +6,16 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>Vue3中的watch侦听器 | 离谱blog</title>
+  <title>Tag: 复选框 | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="watch侦听器的使用和实现方法">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Vue3中的watch侦听器">
-<meta property="og:url" content="http://xixiibn5100.github.io/2024/04/20/Vue3%E4%B8%AD%E7%9A%84watch%E4%BE%A6%E5%90%AC%E5%99%A8/index.html">
+  <meta name="description" content="超级小白的博客">
+<meta property="og:type" content="website">
+<meta property="og:title" content="离谱blog">
+<meta property="og:url" content="http://xixiibn5100.github.io/tags/%E5%A4%8D%E9%80%89%E6%A1%86/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="watch侦听器的使用和实现方法">
+<meta property="og:description" content="超级小白的博客">
 <meta property="og:locale">
-<meta property="article:published_time" content="2024-04-20T13:31:33.000Z">
-<meta property="article:modified_time" content="2024-04-23T03:23:31.841Z">
 <meta property="article:author" content="xixiIBN5100">
-<meta property="article:tag" content="vue">
-<meta property="article:tag" content="源码">
-<meta property="article:tag" content="watch">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="离谱blog" type="application/atom+xml">
@@ -149,183 +144,68 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Vue3中的watch侦听器" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      Vue3中的watch侦听器
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2024" class="archive-year">2024</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2024/04/23/%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E5%A4%8D%E9%80%89%E6%A1%86%E7%9A%84%E6%96%B9%E6%B3%95%E9%80%BB%E8%BE%91/" class="archive-article-date">
+  	<time datetime="2024-04-23T03:10:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-23</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2024/04/23/%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E5%A4%8D%E9%80%89%E6%A1%86%E7%9A%84%E6%96%B9%E6%B3%95%E9%80%BB%E8%BE%91/">批量操作复选框的方法逻辑</a>
     </h1>
   
 
-        
-        <a href="/2024/04/20/Vue3%E4%B8%AD%E7%9A%84watch%E4%BE%A6%E5%90%AC%E5%99%A8/" class="archive-article-date">
-  	<time datetime="2024-04-20T13:31:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="watch侦听器的使用和实现方法"><a href="#watch侦听器的使用和实现方法" class="headerlink" title="watch侦听器的使用和实现方法"></a>watch侦听器的使用和实现方法</h2><span id="more"></span>
-
-<h3 id="watch的特性"><a href="#watch的特性" class="headerlink" title="watch的特性"></a>watch的特性</h3><p>watch只能侦听响应式数据的变化,函数的第一个参数是侦听数据源,第二个参数是一个回调函数,回调函数会返回oldValue和newValue两个参数  </p>
-<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">const</span> a = <span class="title function_">ref</span>(<span class="string">&#x27;啦啦啦啦&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> b = <span class="title function_">ref</span>(<span class="string">&#x27;呵呵呵&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> c = <span class="title function_">reactive</span>(&#123;</span><br><span class="line">    <span class="attr">foo</span>:&#123;</span><br><span class="line">        <span class="attr">bar</span>:&#123;</span><br><span class="line">            <span class="attr">name</span>: <span class="string">&quot;100&quot;</span>,</span><br><span class="line">            <span class="attr">age</span>: <span class="number">10</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"><span class="title function_">watch</span>(a,<span class="function">(<span class="params">oldValue,newValue</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(oldValue,newValue)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">//支持同时侦听两个对象</span></span><br><span class="line"><span class="title function_">watch</span>([a,b],<span class="function">(<span class="params">oldValue,newValue</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(oldValue,newValue)</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">//此时oldValue和newValue是两个数组</span></span><br><span class="line"><span class="comment">//如果需要深度侦听ref包裹的数据类型,需要在配置项中开启deep:true,而reactive包裹的数据类型deep默认开启</span></span><br><span class="line"><span class="comment">//有趣的是,当传入的是一个对象的时候,返回的newValue和oldValue是一个值,这与源码有关,源码采用直接复制,引用类型对象会导致指向的地址相同,所以值相同</span></span><br><span class="line"><span class="title function_">watch</span>([a,b],<span class="function">(<span class="params">oldValue,newValue</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(oldValue,newValue)</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    <span class="attr">deep</span>:<span class="literal">true</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">//如果只想侦听对象中的某个属性,可以在第一个参数中使用回调函数,因为直接访问的不是proxy代理的对象</span></span><br><span class="line"><span class="title function_">watch</span>(<span class="function">()=&gt;</span>c.<span class="property">foo</span>.<span class="property">bar</span>.<span class="property">age</span>,<span class="function">(<span class="params">oldValue,newValue</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(oldValue,newValue)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>watch函数的配置项还有<code>immediate</code>,配置为true的话会立即执行一次侦听,oldValue返回为undefined<br>还有一个是<code>flush</code>配置项 pre表示组件更新之前调用,sync表示同步执行,post表示组件更新之后执行</p>
-<blockquote>
-<p>重新学习Vue3第八天<br>写于寝室</p>
-</blockquote>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">方法逻辑</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">typescript</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">watch</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">复选框</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/04/20/Vue3%E4%B8%AD%E7%9A%84watch%E4%BE%A6%E5%90%AC%E5%99%A8/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2024/04/23/%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E5%A4%8D%E9%80%89%E6%A1%86%E7%9A%84%E6%96%B9%E6%B3%95%E9%80%BB%E8%BE%91/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          批量操作复选框的方法逻辑
-        
-      </div>
-    </a>
   
   
-    <a href="/2024/04/20/Vue3%E4%B8%AD%E7%9A%84computed%E5%87%BD%E6%95%B0/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Vue3中的computed函数</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#watch%E4%BE%A6%E5%90%AC%E5%99%A8%E7%9A%84%E4%BD%BF%E7%94%A8%E5%92%8C%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95"><span class="toc-number">1.</span> <span class="toc-text">watch侦听器的使用和实现方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#watch%E7%9A%84%E7%89%B9%E6%80%A7"><span class="toc-number">1.1.</span> <span class="toc-text">watch的特性</span></a></li></ol></li></ol>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
-  
+    
 
 
           </div>
@@ -345,9 +225,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
