@@ -6,21 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>批量操作复选框的方法逻辑 | 离谱blog</title>
+  <title>深入v-model--自定义组件中v-model | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="复选框全选逻辑">
+  <meta name="description" content="理解v-modelv-model实现了双向数据流的绑定,事实上,v-model是一种语法糖,实际上就是props和emit的结合体">
 <meta property="og:type" content="article">
-<meta property="og:title" content="批量操作复选框的方法逻辑">
-<meta property="og:url" content="http://xixiibn5100.github.io/2024/04/23/%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E5%A4%8D%E9%80%89%E6%A1%86%E7%9A%84%E6%96%B9%E6%B3%95%E9%80%BB%E8%BE%91/index.html">
+<meta property="og:title" content="深入v-model--自定义组件中v-model">
+<meta property="og:url" content="http://xixiibn5100.github.io/2024/04/29/%E6%B7%B1%E5%85%A5v-model-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BB%84%E4%BB%B6%E4%B8%ADv-model/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="复选框全选逻辑">
+<meta property="og:description" content="理解v-modelv-model实现了双向数据流的绑定,事实上,v-model是一种语法糖,实际上就是props和emit的结合体">
 <meta property="og:locale">
-<meta property="article:published_time" content="2024-04-23T03:10:03.000Z">
-<meta property="article:modified_time" content="2024-04-23T09:02:05.804Z">
+<meta property="article:published_time" content="2024-04-29T06:03:21.000Z">
+<meta property="article:modified_time" content="2024-04-29T06:53:36.056Z">
 <meta property="article:author" content="xixiIBN5100">
-<meta property="article:tag" content="方法逻辑">
-<meta property="article:tag" content="typescript">
-<meta property="article:tag" content="复选框">
+<meta property="article:tag" content="v-model">
+<meta property="article:tag" content="自定义组件">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="离谱blog" type="application/atom+xml">
@@ -149,37 +148,38 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-批量操作复选框的方法逻辑" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-深入v-model-自定义组件中v-model" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      批量操作复选框的方法逻辑
+      深入v-model--自定义组件中v-model
     </h1>
   
 
         
-        <a href="/2024/04/23/%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E5%A4%8D%E9%80%89%E6%A1%86%E7%9A%84%E6%96%B9%E6%B3%95%E9%80%BB%E8%BE%91/" class="archive-article-date">
-  	<time datetime="2024-04-23T03:10:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-23</time>
+        <a href="/2024/04/29/%E6%B7%B1%E5%85%A5v-model-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BB%84%E4%BB%B6%E4%B8%ADv-model/" class="archive-article-date">
+  	<time datetime="2024-04-29T06:03:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-29</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="复选框全选逻辑"><a href="#复选框全选逻辑" class="headerlink" title="复选框全选逻辑"></a>复选框全选逻辑</h2><span id="more"></span>
+        <h2 id="理解v-model"><a href="#理解v-model" class="headerlink" title="理解v-model"></a>理解v-model</h2><p>v-model实现了双向数据流的绑定,事实上,v-model是一种语法糖,实际上就是props和emit的结合体  </p>
+<span id="more"></span>
 
-<p>无须多言上代码</p>
-<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//首先创造一个数组储存已经储存的id</span></span><br><span class="line"><span class="keyword">const</span> selectIds = ref&lt;<span class="built_in">number</span>[]&gt;([])</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建一个判断当前元素是否被选中的方法,绑定在单个复选框状态上,每点击一次复选框</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">isSelect</span> = (<span class="params">id:<span class="built_in">number</span></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> selectIds.<span class="property">value</span>.<span class="title function_">includes</span>(id)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建一个点击复选框改变复选框状态的函数</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">toggleSelected</span> = (<span class="params">id:<span class="built_in">number</span></span>) =&gt;&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="title function_">isSelect</span>(id))&#123;</span><br><span class="line">        <span class="comment">//将选中id过滤</span></span><br><span class="line">        selectIds.<span class="property">value</span> = selectIds.<span class="property">value</span>.<span class="title function_">filter</span>(<span class="function"><span class="params">item</span> =&gt;</span> item !== id)</span><br><span class="line">        <span class="comment">//或者可以这么写</span></span><br><span class="line">        <span class="keyword">const</span> index = selectIds.<span class="property">value</span>.<span class="title function_">indexOf</span>(id);</span><br><span class="line">        <span class="keyword">if</span> (index !== -<span class="number">1</span>) &#123;</span><br><span class="line">            selectIds.<span class="property">value</span>.<span class="title function_">splice</span>(index, <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        selectIds.<span class="property">value</span>.<span class="title function_">push</span>(id)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//用计算属性控制全选复选框的状态</span></span><br><span class="line"><span class="keyword">const</span> selectAllChecked = <span class="title function_">computed</span>(<span class="function">()=&gt;</span> &#123;</span><br><span class="line">    <span class="comment">//tableData是数据所在变量</span></span><br><span class="line">    <span class="keyword">if</span>(tableData.<span class="property">value</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> allSelectableItems = tableData.<span class="property">value</span>.<span class="title function_">filter</span>(<span class="function">(<span class="params">item</span>) =&gt;</span> item.<span class="property">status</span> === <span class="number">1</span> );<span class="comment">//选取数据中指定的数据判定是否全选</span></span><br><span class="line">        <span class="keyword">return</span> allSelectableItems.<span class="title function_">every</span>(<span class="function">(<span class="params">item</span>) =&gt;</span> selectIds.<span class="property">value</span>.<span class="title function_">includes</span>(item.<span class="property">id</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">//处理点击全选复选框时的逻辑</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">toggleSelectAll</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span>(selectAllChecked)&#123;</span><br><span class="line">        selectIds.<span class="property">value</span> = []</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//选中所有可选行的id</span></span><br><span class="line">        <span class="keyword">if</span>(tableData.<span class="property">value</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> allSelectableItems = tableData.<span class="property">value</span>.<span class="title function_">filter</span>(<span class="function"><span class="params">item</span> =&gt;</span> item.<span class="property">status</span> === <span class="number">1</span>);</span><br><span class="line">            selectedIds.<span class="property">value</span> = allSelectableItems.<span class="title function_">map</span>(<span class="function"><span class="params">item</span> =&gt;</span> item.<span class="property">id</span>);<span class="comment">//根据映射找到对应id</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="为什么单个复选框不用computed能绑定成功"><a href="#为什么单个复选框不用computed能绑定成功" class="headerlink" title="为什么单个复选框不用computed能绑定成功"></a>为什么单个复选框不用computed能绑定成功</h3><p>当点击复选框时，isSelected(tlData.id) 会被调用是因为 Vue.js 的响应式系统监测到 isSelected(tlData.id) 的依赖发生了变化（即 selectedIds.value 的变化），并且需要重新计算并更新视图。这种机制确保了组件状态和数据的同步更新。  </p>
-<p><del>来自GPT</del></p>
+<h2 id="在自定义组件中使用v-model"><a href="#在自定义组件中使用v-model" class="headerlink" title="在自定义组件中使用v-model"></a>在自定义组件中使用v-model</h2><p>在自定义组件中,当需要数据双向传递的时候,可以使用v-model,增加代码的可读性  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--父组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;div&gt;&#123;&#123; isShow &#125;&#125;&lt;/div&gt;</span><br><span class="line">    &lt;button @click=&quot;isShow != isShow&quot;&gt;开关&lt;/button&gt;</span><br><span class="line">    &lt;vMoudelVue v-model=&quot;isShow&quot;&gt;&lt;/vMoudelVue&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">  const isShow = ref&lt;Boolean&gt;(true)</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;!--自定义组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">   &#123;&#123; modelValue &#125;&#125;</span><br><span class="line">&lt;/template&gt; </span><br><span class="line">&lt;script&gt;</span><br><span class="line">  defineProps&lt;&#123;</span><br><span class="line">      modelValue:boolean //v-model的默认值是modelValue</span><br><span class="line">  &#125;&gt;();</span><br><span class="line"> const emit =  defineEmits([&#x27;update:modelValue&#x27;])</span><br><span class="line">  const close = () =&gt; &#123;</span><br><span class="line">     emit(&#x27;update:modelValue&#x27;,false) //将false传入modelValue中,也就是isShow</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>需要注意的是，当modelValue作为props传入，update:modelValue事件将被自动注册到emit事件中</strong><br><del>语法糖(?</del>  </p>
+<p>当然,自定义组件支持多个v-model绑定,可以使用<code>v-model:textValue = text</code>,那么相应的Props和emit就要改成textValue和update:textValue  </p>
+<h3 id="v-model的自定义修饰符"><a href="#v-model的自定义修饰符" class="headerlink" title="v-model的自定义修饰符"></a>v-model的自定义修饰符</h3><p>v-model中有一些内置的修饰符(trim,lazy,number),我们也可以自定义指令,使用<code>v-model:textValue.lilipupu = lipu</code>,在自定义组件的Props中用<code>textValueModifiers?:&#123; lilipupu:any &#125;</code>接收  </p>
+<p><del>昨天团建断更一天</del>  </p>
 <blockquote>
-<p>是写admin wjh遇到的一个新业务,防止以后忘记写个<del>模板</del></p>
-</blockquote>
-<blockquote>
-<p>写于综合阅览室</p>
+<p>写于G1482高铁</p>
 </blockquote>
 
       
@@ -194,15 +194,11 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">方法逻辑</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">v-model</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">typescript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">复选框</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">自定义组件</a>
         		</li>
       		
 		</ul>
@@ -258,7 +254,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/04/23/%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E5%A4%8D%E9%80%89%E6%A1%86%E7%9A%84%E6%96%B9%E6%B3%95%E9%80%BB%E8%BE%91/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/04/29/%E6%B7%B1%E5%85%A5v-model-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BB%84%E4%BB%B6%E4%B8%ADv-model/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -272,18 +268,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2024/04/23/%E5%88%9D%E8%AF%86bem%E6%9E%B6%E6%9E%84%E5%92%8Csass%E9%A2%84%E5%A4%84%E7%90%86%E5%99%A8/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          初识bem架构和sass预处理器
-        
-      </div>
-    </a>
   
-  
-    <a href="/2024/04/20/Vue3%E4%B8%AD%E7%9A%84watch%E4%BE%A6%E5%90%AC%E5%99%A8/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Vue3中的watch侦听器</div>
+    <a href="/2024/04/27/%E5%88%9D%E8%AF%86-%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F-%E5%92%8C-%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F-Vue3%E4%B8%AD%E5%AE%9E%E7%8E%B0eventBus/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">初识&#39;发布订阅模式&#39;和&#39;观察者模式&#39;-- Vue3中实现eventBus</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -310,7 +297,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%8D%E9%80%89%E6%A1%86%E5%85%A8%E9%80%89%E9%80%BB%E8%BE%91"><span class="toc-number">1.</span> <span class="toc-text">复选框全选逻辑</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8D%95%E4%B8%AA%E5%A4%8D%E9%80%89%E6%A1%86%E4%B8%8D%E7%94%A8computed%E8%83%BD%E7%BB%91%E5%AE%9A%E6%88%90%E5%8A%9F"><span class="toc-number">1.1.</span> <span class="toc-text">为什么单个复选框不用computed能绑定成功</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%90%86%E8%A7%A3v-model"><span class="toc-number">1.</span> <span class="toc-text">理解v-model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BB%84%E4%BB%B6%E4%B8%AD%E4%BD%BF%E7%94%A8v-model"><span class="toc-number">2.</span> <span class="toc-text">在自定义组件中使用v-model</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#v-model%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BF%AE%E9%A5%B0%E7%AC%A6"><span class="toc-number">2.1.</span> <span class="toc-text">v-model的自定义修饰符</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
