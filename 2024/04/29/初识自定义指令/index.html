@@ -6,17 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>Archives: 2023 | 离谱blog</title>
+  <title>初识自定义指令--实现按钮鉴权 | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="超级小白的博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="离谱blog">
-<meta property="og:url" content="http://xixiibn5100.github.io/archives/2023/index.html">
+  <meta name="description" content="自定义指令">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识自定义指令--实现按钮鉴权">
+<meta property="og:url" content="http://xixiibn5100.github.io/2024/04/29/%E5%88%9D%E8%AF%86%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="超级小白的博客">
+<meta property="og:description" content="自定义指令">
 <meta property="og:locale">
+<meta property="og:image" content="http://xixiibn5100.github.io/assets/img/directive.png">
+<meta property="og:image" content="http://xixiibn5100.github.io/assets/img/binding.png">
+<meta property="article:published_time" content="2024-04-29T09:40:51.000Z">
+<meta property="article:modified_time" content="2024-05-05T09:43:41.316Z">
 <meta property="article:author" content="xixiIBN5100">
+<meta property="article:tag" content="自定义指令">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://xixiibn5100.github.io/assets/img/directive.png">
   
     <link rel="alternative" href="/atom.xml" title="离谱blog" type="application/atom+xml">
   
@@ -144,49 +150,184 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-初识自定义指令" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2023" class="archive-year">2023</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2023/10/28/hello-world/" class="archive-article-date">
-  	<time datetime="2023-10-28T06:55:14.015Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-10-28</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/10/28/hello-world/">Hello world</a>
+    <h1 class="article-title" itemprop="name">
+      初识自定义指令--实现按钮鉴权
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+        
+        <a href="/2024/04/29/%E5%88%9D%E8%AF%86%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4/" class="archive-article-date">
+  	<time datetime="2024-04-29T09:40:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="自定义指令"><a href="#自定义指令" class="headerlink" title="自定义指令"></a>自定义指令</h2><span id="more"></span>
 
+<h3 id="自定义指令的使用方法"><a href="#自定义指令的使用方法" class="headerlink" title="自定义指令的使用方法"></a>自定义指令的使用方法</h3><p>如果是在<code>&lt;script setup&gt;</code>定义组件内的指令，有一个语法糖可以使用：任何以v开头的驼峰式命名的变量都可以被用作一个自定义指令，然后在模板中使用。举一个简单的例子：在输入框渲染后自动聚焦 </p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="attr">vFocus</span>: <span class="title class_">Directive</span> = &#123;</span><br><span class="line">    <span class="attr">mounted</span>: <span class="function">(<span class="params">el</span>) =&gt;</span> el.<span class="title function_">focus</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果想要在全局使用这个指令,则需要在App.vue中进行操作</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; createApp &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">App</span> <span class="keyword">from</span> <span class="string">&#x27;./App.vue&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> app = <span class="title function_">createApp</span>(<span class="title class_">App</span>)</span><br><span class="line">app.<span class="title function_">directive</span>(<span class="string">&#x27;focus&#x27;</span>, &#123;</span><br><span class="line">  <span class="title function_">mounted</span>(<span class="params">el</span>) &#123;</span><br><span class="line">     el.<span class="title function_">focus</span>();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line">app.<span class="title function_">mount</span>(<span class="string">&#x27;#app&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义指令的生命周期"><a href="#自定义指令的生命周期" class="headerlink" title="自定义指令的生命周期"></a>自定义指令的生命周期</h3><ul>
+<li>created：在绑定元素的属性前，或者事件监听器应用前调用</li>
+<li>beforeMount：在元素被插入到DOM前调用，例如我们想要实现输入框的自动聚焦，就不能在beforeMount钩子中实现</li>
+<li>mounted：在绑定元素的父组件以及自己的所有子节点都挂载完毕后调用，这个时候DOM已经渲染出来，我们实现输入框自动聚焦也是在这个钩子函数中实现</li>
+<li>beforeUpdate：绑定元素的父组件更新前调用</li>
+<li>updated：在绑定元素的父组件以及自己的所有子节点都更新完毕后调用</li>
+<li>beforeUnmount：绑定元素的父组件卸载前调用</li>
+<li>unmounted：绑定元素的父组件卸载后调用</li>
+</ul>
+<p><strong>生命周期的参数</strong></p>
+<p><img src="/assets/img/directive.png"></p>
+<h3 id="简写形式"><a href="#简写形式" class="headerlink" title="简写形式"></a>简写形式</h3><p>我们在写指令的时候，可以具体指定在哪些钩子中执行一些逻辑。有时候指令的钩子不止一个，但是又是重复的逻辑操作时，重复写一遍代码显然有点不够优雅。在Vue中，如果我们在自定义指令时，需要在mounted和updated中实现相同的行为，并且不关心其他钩子的情况，那么我们开可以采用简写：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">app.<span class="title function_">directive</span>(<span class="string">&#x27;color&#x27;</span>, <span class="function">(<span class="params">el, binding</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 这将会在mounted和updated时调用</span></span><br><span class="line">    el.<span class="property">style</span>.<span class="property">color</span> = binding.<span class="property">value</span>;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="给binding-value传入对象"><a href="#给binding-value传入对象" class="headerlink" title="给binding.value传入对象"></a>给binding.value传入对象</h3><p><img src="/assets/img/binding.png"></p>
+<p><del>下篇讲自定义实现一下防抖节流(?</del></p>
+<blockquote>
+<p>写于寝室</p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">自定义指令</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/04/29/%E5%88%9D%E8%AF%86%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2024/04/29/%E6%B7%B1%E5%85%A5v-model-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BB%84%E4%BB%B6%E4%B8%ADv-model/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">深入v-model--自定义组件中v-model</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4"><span class="toc-number">1.</span> <span class="toc-text">自定义指令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-number">1.1.</span> <span class="toc-text">自定义指令的使用方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-number">1.2.</span> <span class="toc-text">自定义指令的生命周期</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E5%86%99%E5%BD%A2%E5%BC%8F"><span class="toc-number">1.3.</span> <span class="toc-text">简写形式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%99binding-value%E4%BC%A0%E5%85%A5%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.4.</span> <span class="toc-text">给binding.value传入对象</span></a></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -206,8 +347,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
