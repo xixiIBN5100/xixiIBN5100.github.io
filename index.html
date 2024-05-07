@@ -146,6 +146,95 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-性能优化——图片懒加载的实现方式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2024/05/07/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E2%80%94%E2%80%94%E5%9B%BE%E7%89%87%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/">性能优化——图片懒加载的实现方式</a>
+    </h1>
+  
+
+        
+        <a href="/2024/05/07/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E2%80%94%E2%80%94%E5%9B%BE%E7%89%87%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/" class="archive-article-date">
+  	<time datetime="2024-05-07T11:25:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <span id="more"></span>
+
+<h2 id="图片懒加载"><a href="#图片懒加载" class="headerlink" title="图片懒加载"></a>图片懒加载</h2><p>vue3有提供懒加载的插件,这里我们使用VueUse hook库来自己封装一个图片懒加载的自定义指令  </p>
+<p>可以通过VueUse中的useIntersectionObserver来判断图片是否进入可视区域  </p>
+<p><strong>useIntersectionObserver：提供对元素是否可见进行观察的功能，可用于实现懒加载等效果。</strong>  </p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">app.<span class="title function_">directive</span>(<span class="string">&quot;lazy&quot;</span>, &#123;</span><br><span class="line">  <span class="title function_">mounted</span>(<span class="params">el, binding</span>) &#123;</span><br><span class="line">    el.<span class="property">src</span> = <span class="string">&quot;@/assets/images/default.png&quot;</span>; <span class="comment">// 使用默认图片</span></span><br><span class="line">    <span class="keyword">const</span> &#123; stop &#125; = <span class="title function_">useIntersectionObserver</span>(el, <span class="function">(<span class="params">[&#123; isIntersecting &#125;]</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (isIntersecting) &#123;</span><br><span class="line">        el.<span class="property">src</span> = binding.<span class="property">value</span>;</span><br><span class="line">        <span class="comment">//在监听的图片第一次完成加载后就停止监听,否侧上滑到已经加载过图片的可视区域还会触发监听</span></span><br><span class="line">        <span class="title function_">stop</span>();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+<p><del>简单水一篇</del></p>
+<blockquote>
+<p>写于综合阅览室</p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">性能优化</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">图片懒加载</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2024/05/07/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E2%80%94%E2%80%94%E5%9B%BE%E7%89%87%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-自定义指令-防抖与节流" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -881,88 +970,6 @@
 
 
   
-    <article id="post-初识bem架构和sass预处理器" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/04/23/%E5%88%9D%E8%AF%86bem%E6%9E%B6%E6%9E%84%E5%92%8Csass%E9%A2%84%E5%A4%84%E7%90%86%E5%99%A8/">初识bem架构和sass预处理器</a>
-    </h1>
-  
-
-        
-        <a href="/2024/04/23/%E5%88%9D%E8%AF%86bem%E6%9E%B6%E6%9E%84%E5%92%8Csass%E9%A2%84%E5%A4%84%E7%90%86%E5%99%A8/" class="archive-article-date">
-  	<time datetime="2024-04-23T08:09:53.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="认识bem架构"><a href="#认识bem架构" class="headerlink" title="认识bem架构"></a>认识bem架构</h2><p>bem架构中:<br>b代表block(块级元素,用 ‘ - ‘ 链接)<br>e代表element(内部元素,用 ‘ __ ‘ 链接)<br>m代表modify(修饰元素,用 ‘ – ‘ 链接)</p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">sass</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">css</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">bem</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/04/23/%E5%88%9D%E8%AF%86bem%E6%9E%B6%E6%9E%84%E5%92%8Csass%E9%A2%84%E5%A4%84%E7%90%86%E5%99%A8/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
@@ -1198,6 +1205,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">节流</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">图片懒加载</a>
               </li>
             
             <div class="clearfix"></div>
