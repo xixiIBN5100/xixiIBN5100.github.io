@@ -8,15 +8,15 @@
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
   <title>性能优化——图片懒加载的实现方式 | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="图片懒加载vue3有提供懒加载的插件,这里我们使用VueUse hook库来自己封装一个图片懒加载的自定义指令   可以通过VueUse中的useIntersectionObserver来判断图片是否进入可视区域   useIntersectionObserver：提供对元素是否可见进行观察的功能，可用于实现懒加载等效果。   123456789101112app.directive(&amp;quo">
+  <meta name="description" content="图片懒加载">
 <meta property="og:type" content="article">
 <meta property="og:title" content="性能优化——图片懒加载的实现方式">
 <meta property="og:url" content="http://xixiibn5100.github.io/2024/05/07/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E2%80%94%E2%80%94%E5%9B%BE%E7%89%87%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="图片懒加载vue3有提供懒加载的插件,这里我们使用VueUse hook库来自己封装一个图片懒加载的自定义指令   可以通过VueUse中的useIntersectionObserver来判断图片是否进入可视区域   useIntersectionObserver：提供对元素是否可见进行观察的功能，可用于实现懒加载等效果。   123456789101112app.directive(&amp;quo">
+<meta property="og:description" content="图片懒加载">
 <meta property="og:locale">
 <meta property="article:published_time" content="2024-05-07T11:25:33.000Z">
-<meta property="article:modified_time" content="2024-05-07T11:45:00.588Z">
+<meta property="article:modified_time" content="2024-05-15T05:13:41.497Z">
 <meta property="article:author" content="xixiIBN5100">
 <meta property="article:tag" content="性能优化">
 <meta property="article:tag" content="图片懒加载">
@@ -168,9 +168,9 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <span id="more"></span>
+        <h2 id="图片懒加载"><a href="#图片懒加载" class="headerlink" title="图片懒加载"></a>图片懒加载</h2><span id="more"></span>
 
-<h2 id="图片懒加载"><a href="#图片懒加载" class="headerlink" title="图片懒加载"></a>图片懒加载</h2><p>vue3有提供懒加载的插件,这里我们使用VueUse hook库来自己封装一个图片懒加载的自定义指令  </p>
+<p>vue3有提供懒加载的插件,这里我们使用VueUse hook库来自己封装一个图片懒加载的自定义指令  </p>
 <p>可以通过VueUse中的useIntersectionObserver来判断图片是否进入可视区域  </p>
 <p><strong>useIntersectionObserver：提供对元素是否可见进行观察的功能，可用于实现懒加载等效果。</strong>  </p>
 <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">app.<span class="title function_">directive</span>(<span class="string">&quot;lazy&quot;</span>, &#123;</span><br><span class="line">  <span class="title function_">mounted</span>(<span class="params">el, binding</span>) &#123;</span><br><span class="line">    el.<span class="property">src</span> = <span class="string">&quot;@/assets/images/default.png&quot;</span>; <span class="comment">// 使用默认图片</span></span><br><span class="line">    <span class="keyword">const</span> &#123; stop &#125; = <span class="title function_">useIntersectionObserver</span>(el, <span class="function">(<span class="params">[&#123; isIntersecting &#125;]</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (isIntersecting) &#123;</span><br><span class="line">        el.<span class="property">src</span> = binding.<span class="property">value</span>;</span><br><span class="line">        <span class="comment">//在监听的图片第一次完成加载后就停止监听,否侧上滑到已经加载过图片的可视区域还会触发监听</span></span><br><span class="line">        <span class="title function_">stop</span>();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -266,6 +266,15 @@
 
   
 <nav id="article-nav">
+  
+    <a href="/2024/05/15/Vue3%E4%B8%AD%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8F%92%E4%BB%B6%E5%8F%8A%E5%85%B6%E5%8E%9F%E7%90%86/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Vue3中自定义插件及其原理
+        
+      </div>
+    </a>
   
   
     <a href="/2024/05/06/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4-%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/" id="article-nav-older" class="article-nav-link-wrap">
@@ -550,6 +559,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">图片懒加载</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">自定义插件</a>
               </li>
             
             <div class="clearfix"></div>

@@ -6,19 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>插槽全家桶 | 离谱blog</title>
+  <title>Vue3中自定义插件及其原理 | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="插槽相当于一个占位符,可以让子组件接受来自父组件的信息">
+  <meta name="description" content="插件的使用方式在Vue中的插件,都需要使用app.use()方法来启用.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="插槽全家桶">
-<meta property="og:url" content="http://xixiibn5100.github.io/2024/04/24/%E6%8F%92%E6%A7%BD%E5%85%A8%E5%AE%B6%E6%A1%B6/index.html">
+<meta property="og:title" content="Vue3中自定义插件及其原理">
+<meta property="og:url" content="http://xixiibn5100.github.io/2024/05/15/Vue3%E4%B8%AD%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8F%92%E4%BB%B6%E5%8F%8A%E5%85%B6%E5%8E%9F%E7%90%86/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="插槽相当于一个占位符,可以让子组件接受来自父组件的信息">
+<meta property="og:description" content="插件的使用方式在Vue中的插件,都需要使用app.use()方法来启用.">
 <meta property="og:locale">
-<meta property="article:published_time" content="2024-04-24T12:22:01.000Z">
-<meta property="article:modified_time" content="2024-04-24T12:51:31.157Z">
+<meta property="article:published_time" content="2024-05-15T04:01:09.000Z">
+<meta property="article:modified_time" content="2024-05-15T05:13:41.502Z">
 <meta property="article:author" content="xixiIBN5100">
-<meta property="article:tag" content="slot">
+<meta property="article:tag" content="源码">
+<meta property="article:tag" content="自定义插件">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="离谱blog" type="application/atom+xml">
@@ -147,36 +148,37 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-插槽全家桶" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Vue3中自定义插件及其原理" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      插槽全家桶
+      Vue3中自定义插件及其原理
     </h1>
   
 
         
-        <a href="/2024/04/24/%E6%8F%92%E6%A7%BD%E5%85%A8%E5%AE%B6%E6%A1%B6/" class="archive-article-date">
-  	<time datetime="2024-04-24T12:22:01.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-24</time>
+        <a href="/2024/05/15/Vue3%E4%B8%AD%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8F%92%E4%BB%B6%E5%8F%8A%E5%85%B6%E5%8E%9F%E7%90%86/" class="archive-article-date">
+  	<time datetime="2024-05-15T04:01:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-15</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>插槽相当于一个占位符,可以让子组件接受来自父组件的信息</p>
+        <h2 id="插件的使用方式"><a href="#插件的使用方式" class="headerlink" title="插件的使用方式"></a>插件的使用方式</h2><p>在Vue中的插件,都需要使用<code>app.use()</code>方法来启用.  </p>
 <span id="more"></span>
 
-<h2 id="匿名插槽-具名插槽-插槽作用域"><a href="#匿名插槽-具名插槽-插槽作用域" class="headerlink" title="匿名插槽 &amp;&amp; 具名插槽 &amp;&amp; 插槽作用域"></a>匿名插槽 &amp;&amp; 具名插槽 &amp;&amp; 插槽作用域</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">//children</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;header&gt;</span><br><span class="line">    &lt;slot name=&quot;header&quot;&gt;&lt;/slot&gt;</span><br><span class="line">  &lt;/header&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;main&gt;</span><br><span class="line">    //匿名插槽</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;slot&gt;&lt;/slot&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">    </span><br><span class="line">    //插槽作用域,把子组件中插槽内容传给父组件</span><br><span class="line">  &lt;div v-for=&quot;(item,index) in data&quot;&gt;</span><br><span class="line">    &lt;slot :data=&quot;item&quot; :index=&quot;index&quot;&gt;&lt;/slot&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">  &lt;/main&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;footer&gt;</span><br><span class="line">    &lt;slot name=&quot;footer&quot;&gt;&lt;/slot&gt;</span><br><span class="line">  &lt;/footer&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">  const data = reactive([</span><br><span class="line">    &#123;</span><br><span class="line">      name:&#x27;插入1&#x27;,</span><br><span class="line">      age: 20</span><br><span class="line">    &#125;,&#123;</span><br><span class="line">      name:&#x27;插入2&#x27;,</span><br><span class="line">      age: 21</span><br><span class="line">    &#125;,&#123;</span><br><span class="line">      name:&#x27;插入3&#x27;,</span><br><span class="line">      age: 22</span><br><span class="line">    &#125;,</span><br><span class="line">  ])</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//father</span><br><span class="line">&lt;template&gt;</span><br><span class="line"></span><br><span class="line">  &lt;children&gt;</span><br><span class="line">    &lt;template v-slot:header&gt;</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        插入上面</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    &lt;/template&gt;</span><br><span class="line">    //匿名插槽</span><br><span class="line">    &lt;template v-slot&gt;</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        插入中间</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    &lt;/template&gt;</span><br><span class="line">    //插槽作用域</span><br><span class="line">    &lt;template v-slot=&quot;&#123;data,index&#125;&quot;&gt;</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &#123;&#123; data &#125;&#125; //父组件可以通过这种方式拿到子组件插槽中的数据</span><br><span class="line">        &#123;&#123; index &#125;&#125;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    &lt;/template&gt;</span><br><span class="line">    &lt;template v-slot:footer&gt;</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        插入下面</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    &lt;/template&gt;</span><br><span class="line">  &lt;/children&gt;</span><br><span class="line"></span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="如何编写自定义插件"><a href="#如何编写自定义插件" class="headerlink" title="如何编写自定义插件"></a>如何编写自定义插件</h2><p>我们来自定义一个加载插件</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Loading.ts</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Loading</span> <span class="keyword">from</span> <span class="string">&#x27;./index.ts&#x27;</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">    <span class="comment">//如果插件不是函数模式,在app.use的时候调用install函数,回传得到app(main.ts中的app),对app进行插件配置</span></span><br><span class="line">    <span class="title function_">install</span>(<span class="params">app</span>) &#123;</span><br><span class="line">        <span class="comment">//此时导入的组件需要转化成Vnode进行挂载</span></span><br><span class="line">        <span class="keyword">const</span> <span class="title class_">Vnode</span> = <span class="title function_">createVNode</span>(<span class="title class_">Loading</span>)</span><br><span class="line">        <span class="comment">//用render函数进行挂载,挂载在全局上</span></span><br><span class="line">        <span class="title function_">render</span>(<span class="title class_">Vnode</span>,<span class="variable language_">document</span>.<span class="property">body</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><strong>有关简写</strong><br>v-slot可以简写为#default,v-slot:footer可以简写为#footer</p>
-<h2 id="动态插槽"><a href="#动态插槽" class="headerlink" title="动态插槽"></a>动态插槽</h2><p>插槽名称可以进行动态转化</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;childern&gt;</span><br><span class="line">    &lt;template #[name]&gt;</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        我乱插</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    &lt;/template&gt;</span><br><span class="line">  &lt;/childern&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">  let name = ref(&#x27;footer&#x27;)</span><br><span class="line">  //可以修改插槽名来改变插入位置</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
-<p>以上就是插槽全家桶的<del>所有</del>内容</p>
+<h3 id="如何调用挂载组件中的方法"><a href="#如何调用挂载组件中的方法" class="headerlink" title="如何调用挂载组件中的方法"></a>如何调用挂载组件中的方法</h3><p>当然是使用defineExpose啦  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">  defineExpose(&#123;</span><br><span class="line">    show,</span><br><span class="line">    hide,</span><br><span class="line">    isShow,</span><br><span class="line">  &#125;)</span><br><span class="line">&lt;/script&gt;</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">使用这种方法,我们可以配置全局挂载啦</span><br><span class="line"></span><br><span class="line">```typescript</span><br><span class="line">//自定义变量$loading</span><br><span class="line">app.config.globalProperties.$loading = &#123;</span><br><span class="line">    show: Vnode.component?.exposed?.show,//拿到暴露方法</span><br><span class="line">    hide: Vnode.component?.exposed?.hide,</span><br><span class="line">    isShow: Vnode.component?.exposed?.isShow</span><br><span class="line">&#125;</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">挂载以后,在需要调用插件的时候,获取当前实例调用</span><br><span class="line">```typescript</span><br><span class="line">const instance = getCurrentInstance()</span><br><span class="line"></span><br><span class="line">instantce?.proxy?.$loading.show</span><br></pre></td></tr></table></figure>
+<p>这样就能把组件调出来啦  </p>
+<p>乍一看和全局组件没有什么区别,但是实际上组件能够实现更加复杂的功能,以后要是真遇到需要自定义插件的时候在写篇博客罢</p>
+<p><del>断了好久没写博客了</del>  </p>
 <blockquote>
 <p>写于综合阅览室</p>
 </blockquote>
@@ -193,7 +195,11 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">slot</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">自定义插件</a>
         		</li>
       		
 		</ul>
@@ -249,7 +255,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/04/24/%E6%8F%92%E6%A7%BD%E5%85%A8%E5%AE%B6%E6%A1%B6/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/05/15/Vue3%E4%B8%AD%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8F%92%E4%BB%B6%E5%8F%8A%E5%85%B6%E5%8E%9F%E7%90%86/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -263,18 +269,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2024/04/25/%E5%BC%82%E6%AD%A5%E7%BB%84%E4%BB%B6-%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%A1%88%E4%BE%8B/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          异步组件--骨架屏案例
-        
-      </div>
-    </a>
   
-  
-    <a href="/2024/04/24/%E6%B3%A8%E5%86%8C%E5%85%A8%E5%B1%80%E7%BB%84%E4%BB%B6%E5%92%8C%E8%AE%A4%E8%AF%86%E9%80%92%E5%BD%92%E7%BB%84%E4%BB%B6/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">注册全局组件、认识递归组件和动态组件</div>
+    <a href="/2024/05/07/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E2%80%94%E2%80%94%E5%9B%BE%E7%89%87%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">性能优化——图片懒加载的实现方式</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -301,7 +298,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%BF%E5%90%8D%E6%8F%92%E6%A7%BD-%E5%85%B7%E5%90%8D%E6%8F%92%E6%A7%BD-%E6%8F%92%E6%A7%BD%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-number">1.</span> <span class="toc-text">匿名插槽 &amp;&amp; 具名插槽 &amp;&amp; 插槽作用域</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E6%8F%92%E6%A7%BD"><span class="toc-number">2.</span> <span class="toc-text">动态插槽</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%92%E4%BB%B6%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">插件的使用方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8F%92%E4%BB%B6"><span class="toc-number">2.</span> <span class="toc-text">如何编写自定义插件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%B0%83%E7%94%A8%E6%8C%82%E8%BD%BD%E7%BB%84%E4%BB%B6%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-number">2.1.</span> <span class="toc-text">如何调用挂载组件中的方法</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
