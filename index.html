@@ -146,6 +146,92 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-router4-汇总" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2024/07/06/router4-%E6%B1%87%E6%80%BB/">router4 汇总 (p1)</a>
+    </h1>
+  
+
+        
+        <a href="/2024/07/06/router4-%E6%B1%87%E6%80%BB/" class="archive-article-date">
+  	<time datetime="2024-07-06T15:26:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="命名视图"><a href="#命名视图" class="headerlink" title="命名视图"></a>命名视图</h2><p>命名视图视图可以在同一级（同一个组件） 中展示更多的路由视图，而不是嵌套显示。命名视图可以让一个组件中具有多个路由渲染出口，这对于一些特定的布局组件非常有用。命名视图的概念非常类似于“具名插槽”，并且视图的默认名称也是 default。<br>一个视图使用一个组件渲染，因此对于同个路由，多个视图就需要多个组件。确保正确使用components 配置（带上s)</p>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">router4</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">命名视图</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">重定向</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">路由元信息</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2024/07/06/router4-%E6%B1%87%E6%80%BB/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-vue-router-路由传参" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -166,29 +252,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <span id="more"></span>
-
-<h2 id="路由传参"><a href="#路由传参" class="headerlink" title="路由传参"></a>路由传参</h2><p>跨页面传参的一种方式</p>
-<h3 id="使用path和query传参"><a href="#使用path和query传参" class="headerlink" title="使用path和query传参"></a>使用path和query传参</h3><p>这种方式传输的数据会展示到url上面去  </p>
-<p>传输方</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> router = <span class="title function_">useRouter</span>()</span><br><span class="line"></span><br><span class="line">router.<span class="title function_">push</span>(&#123;</span><br><span class="line">    <span class="attr">path</span>: <span class="string">&#x27;/user&#x27;</span>,</span><br><span class="line">    <span class="attr">query</span>: &#123;</span><br><span class="line">        <span class="attr">id</span>: <span class="number">1</span>,</span><br><span class="line">    &#125;<span class="comment">//只能接收一个对象</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>接收方</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> route = <span class="title function_">useRoute</span>()</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(route.<span class="property">query</span>.<span class="property">id</span>) <span class="comment">//拿到id</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h3 id="使用name和params传参"><a href="#使用name和params传参" class="headerlink" title="使用name和params传参"></a>使用name和params传参</h3><p>这种方式传输的数据不会展示到url上面去,储存在内存之中,刷新页面会导致参数丢失</p>
-<p>传输方</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> router = <span class="title function_">useRouter</span>()</span><br><span class="line"></span><br><span class="line">router.<span class="title function_">push</span>(&#123;</span><br><span class="line">    <span class="attr">name</span>: <span class="string">&#x27;user&#x27;</span>,</span><br><span class="line">    <span class="attr">params</span>: &#123;</span><br><span class="line">        <span class="attr">id</span>: <span class="number">1</span>,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>接收方</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> route = <span class="title function_">useRoute</span>()</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(route.<span class="property">params</span>.<span class="property">id</span>) <span class="comment">//拿到id</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>改进的方法是使用动态路由参数,动态路由之后单独开一篇讲 <del>挖坑</del>  </p>
-<p>好久没更新了,忙着期末周和搬家,虽然还在军训但也算是稳定下来了,看看能不能多写写吧</p>
-<blockquote>
-<p>写于西13</p>
-</blockquote>
-
+        <h2 id="路由传参"><a href="#路由传参" class="headerlink" title="路由传参"></a>路由传参</h2><p>跨页面传参的一种方式</p>
+        
       
 
       
@@ -876,80 +941,6 @@
 
 
   
-    <article id="post-初识自定义指令" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/05/05/%E5%88%9D%E8%AF%86%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4/">初识自定义指令--实现按钮鉴权</a>
-    </h1>
-  
-
-        
-        <a href="/2024/05/05/%E5%88%9D%E8%AF%86%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4/" class="archive-article-date">
-  	<time datetime="2024-05-05T09:40:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="自定义指令"><a href="#自定义指令" class="headerlink" title="自定义指令"></a>自定义指令</h2>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">自定义指令</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/05/05/%E5%88%9D%E8%AF%86%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
@@ -1237,6 +1228,22 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">vue router</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">router4</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">命名视图</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">重定向</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">路由元信息</a>
               </li>
             
             <div class="clearfix"></div>
