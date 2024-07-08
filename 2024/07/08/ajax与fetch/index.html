@@ -6,16 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>Tag: vue | 离谱blog</title>
+  <title>ajax与fetch全套 | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="超级小白的博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="离谱blog">
-<meta property="og:url" content="http://xixiibn5100.github.io/tags/vue/index.html">
+  <meta name="description" content="有一次面试官让我手写原生请求没写出来…..    还是太过于依赖axios中前人传下来的已经封装好的请求,这次也算是补全基础啦">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ajax与fetch全套">
+<meta property="og:url" content="http://xixiibn5100.github.io/2024/07/08/ajax%E4%B8%8Efetch/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="超级小白的博客">
+<meta property="og:description" content="有一次面试官让我手写原生请求没写出来…..    还是太过于依赖axios中前人传下来的已经封装好的请求,这次也算是补全基础啦">
 <meta property="og:locale">
+<meta property="article:published_time" content="2024-07-08T15:32:52.000Z">
+<meta property="article:modified_time" content="2024-07-08T16:32:58.771Z">
 <meta property="article:author" content="xixiIBN5100">
+<meta property="article:tag" content="网络">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="离谱blog" type="application/atom+xml">
@@ -144,202 +147,241 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-ajax与fetch" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ajax与fetch全套
+    </h1>
+  
+
+        
+        <a href="/2024/07/08/ajax%E4%B8%8Efetch/" class="archive-article-date">
+  	<time datetime="2024-07-08T15:32:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-08</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>有一次面试官让我手写原生请求没写出来…..   </p>
+<p>还是太过于依赖axios中前人传下来的已经封装好的请求,这次也算是补全基础啦  </p>
+<span id="more"></span>
+
+<h2 id="AJAX"><a href="#AJAX" class="headerlink" title="AJAX"></a>AJAX</h2><p>AJAX(Asynchronous JavaScript And XML)，即异步的 JavaScript 和 XML，是一种用于创建快速动态网页的技术。它使用 XMLHttpRequest 对象来获取数据，并且使用 JavaScript 和 DOM 来处理这些数据。  </p>
+<h3 id="封装一个ajax"><a href="#封装一个ajax" class="headerlink" title="封装一个ajax"></a>封装一个ajax</h3><pre><code class="js">const sendAjax = () =&gt; &#123;
+    const xhr = new XMLHttpRequest()
+    
+    //GET请求
+    xhr.open(&#39;GET&#39;, &#39;http://localhost:3000/api/getData&#39;,true)//第三个参数是是否异步,默认为true  
+    
+    //POST请求
+    xhr.open(&#39;POST&#39;, &#39;http://localhost:3000/api/getData&#39;,true)
+    xhr.setRequestHeader(&#39;Content-Type&#39;, &#39;application/json&#39;)//设置POST请求头
+    
+    xhr.addEventListener(&#39;progress&#39;, (e) =&gt; &#123;
+        progress.innerText = `$&#123;(e.loaded / e.total * 100).toFixed(2)&#125;%`
+    &#125;) //进度条
+    xhr.onreadystatechange = () =&gt; &#123;
+        if (xhr.readyState === 4 &amp;&amp; xhr.status === 200) &#123;
+            console.log(xhr.responseText)
+        &#125;
+        xhr.send(null);//get请求不需要传递参数
+        xhr.send(JSON.stringify(&#123;
+            name: &#39;张三&#39;,
+            age: 18
+        &#125;)) // post请求需要传递参数,使用JSON.stringify()方法将参数转换为json格式
+    &#125;
+    xhr.addEventListener(&#39;error&#39; , () =&gt; &#123;
+        console.log(&#39;请求失败&#39;)
+    &#125;)//请求被暂停会触发该监听器
+&#125;  
+
+const stop = () =&gt; &#123;
+    xhr.abort()
+&#125;//停止请求的方法
+
+</code></pre>
+<h2 id="FETCH"><a href="#FETCH" class="headerlink" title="FETCH"></a>FETCH</h2><p>fetch默认只支持GET和POST请求方法</p>
+<h3 id="封装一个fetch"><a href="#封装一个fetch" class="headerlink" title="封装一个fetch"></a>封装一个fetch</h3><pre><code class="js">// GET请求
+const sendFetch = () =&gt; &#123;
+    fetch(&#39;http://localhost:3000/api/getData&#39;).then(async res =&gt; &#123;
+        const response = res.clone();//原来的res已经被进度条占用了,新建一个response获取响应数据
+        //实现进度条
+        const reader = res.body.getReader()
+        const total = res.headers.get(&#39;Content-Length&#39;)
+        let loader = 0
+        while(true)&#123;
+            const &#123;done, value&#125; = await reader.read()
+            if(done)&#123;
+                break
+            &#125;
+            loader += value.length
+        &#125;
+        return res.json() //这里的res并不是响应对象,而是一个promise对象,所以需要使用then方法获取响应对象
+
+        //如果加入进度条那么就要
+        return response.json()
+    &#125;).then(data =&gt; &#123;
+        progress.innerText = `$&#123;(loader / total * 100).toFixed(2)&#125;%` //设置进度条
+        console.log(data)//拿到响应数据
+
+    &#125;)
+&#125; 
+
+// POST请求
+const sendFetch = () =&gt; &#123;
+    fetch(&#39;http://localhost:3000/api/getData&#39;, &#123;
+        method: &#39;POST&#39;,
+        headers: &#123;
+            &#39;Content-Type&#39;: &#39;application/json&#39;
+        &#125;,
+        body: JSON.stringify(&#123;
+            name: &#39;张三&#39;,
+            age: 18
+        &#125;)//请求数据
+    &#125;).then(res =&gt;&#123;
+        return res.json()
+    &#125;).then(data =&gt; &#123;
+        console.log(data)
+    &#125;)
+&#125;
+</code></pre>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2024" class="archive-year">2024</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/20/Vue3%E4%B8%AD%E7%9A%84watch%E4%BE%A6%E5%90%AC%E5%99%A8/" class="archive-article-date">
-  	<time datetime="2024-04-20T13:31:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/20/Vue3%E4%B8%AD%E7%9A%84watch%E4%BE%A6%E5%90%AC%E5%99%A8/">Vue3中的watch侦听器</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">watch</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/07/08/ajax%E4%B8%8Efetch/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/20/Vue3%E4%B8%AD%E7%9A%84computed%E5%87%BD%E6%95%B0/" class="archive-article-date">
-  	<time datetime="2024-04-20T08:28:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-20</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2024/07/07/%E8%BE%93%E5%85%A5url%E6%8C%89%E4%B8%8B%E5%9B%9E%E8%BD%A6-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">输入url按下回车,发生了什么</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/20/Vue3%E4%B8%AD%E7%9A%84computed%E5%87%BD%E6%95%B0/">Vue3中的computed函数</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">computed</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#AJAX"><span class="toc-number">1.</span> <span class="toc-text">AJAX</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%81%E8%A3%85%E4%B8%80%E4%B8%AAajax"><span class="toc-number">1.1.</span> <span class="toc-text">封装一个ajax</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FETCH"><span class="toc-number">2.</span> <span class="toc-text">FETCH</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%81%E8%A3%85%E4%B8%80%E4%B8%AAfetch"><span class="toc-number">2.1.</span> <span class="toc-text">封装一个fetch</span></a></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+        
+    </div>
+</aside>
+
+
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/17/Vue3%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/" class="archive-article-date">
-  	<time datetime="2024-04-17T11:18:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-17</time>
-</a>
-        </div>
-    	 
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/17/Vue3%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/">Vue3的响应式原理</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">响应式</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/15/%E9%87%8D%E8%AF%86Ref/" class="archive-article-date">
-  	<time datetime="2024-04-15T15:34:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/15/%E9%87%8D%E8%AF%86Ref/">重识Ref</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Ref</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
 
 
           </div>
@@ -359,9 +401,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
