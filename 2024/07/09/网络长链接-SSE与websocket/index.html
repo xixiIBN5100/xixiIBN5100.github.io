@@ -6,16 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>Archives: 2024 | 离谱blog</title>
+  <title>网络长链接----SSE与websocket | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="超级小白的博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="离谱blog">
-<meta property="og:url" content="http://xixiibn5100.github.io/archives/2024/page/3/index.html">
+  <meta name="description" content="在一些场景下，我们希望客户端能够实时与服务端通信，而不是通过轮询的方式来获取服务端的消息。这种时候我们就需要网络长链接来实现">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络长链接----SSE与websocket">
+<meta property="og:url" content="http://xixiibn5100.github.io/2024/07/09/%E7%BD%91%E7%BB%9C%E9%95%BF%E9%93%BE%E6%8E%A5-SSE%E4%B8%8Ewebsocket/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="超级小白的博客">
+<meta property="og:description" content="在一些场景下，我们希望客户端能够实时与服务端通信，而不是通过轮询的方式来获取服务端的消息。这种时候我们就需要网络长链接来实现">
 <meta property="og:locale">
+<meta property="article:published_time" content="2024-07-09T14:23:41.000Z">
+<meta property="article:modified_time" content="2024-07-09T15:02:23.684Z">
 <meta property="article:author" content="xixiIBN5100">
+<meta property="article:tag" content="网络">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="离谱blog" type="application/atom+xml">
@@ -144,473 +147,205 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-网络长链接-SSE与websocket" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      网络长链接----SSE与websocket
+    </h1>
+  
+
+        
+        <a href="/2024/07/09/%E7%BD%91%E7%BB%9C%E9%95%BF%E9%93%BE%E6%8E%A5-SSE%E4%B8%8Ewebsocket/" class="archive-article-date">
+  	<time datetime="2024-07-09T14:23:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-09</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在一些场景下，我们希望客户端能够实时与服务端通信，而不是通过轮询的方式来获取服务端的消息。这种时候我们就需要网络长链接来实现  </p>
+<span id="more"></span>
+
+<h2 id="SSE"><a href="#SSE" class="headerlink" title="SSE"></a>SSE</h2><p>SSE（Server-Sent Events）是一种用于在浏览器中实现服务器推送的技术。它允许服务器向客户端发送事件，客户端可以实时接收并处理这些事件。  </p>
+<p><strong>注意</strong><br>SSE 是基于 HTTP 协议的，因此它不能用于所有类型的网络请求，只能用于 GET 请求。而且，SSE 的事件流是单向的，即服务器向客户端发送事件，客户端无法向服务器发送事件。  </p>
+<p><del>据说GPT就用的这种技术将字一个一个打在页面上(?</del></p>
+<p>前端代码演示  </p>
+<pre><code class="js">const sse = () =&gt; &#123;
+    const sse = new EventSource(&#39;http://localhost:3000/sse&#39;)
+    //拿到默认type为message返回的数据
+    sse.onmessage = function(e) &#123;
+        console.log(e.data)  
+    &#125;
+    
+    //如果后段设置了type名字,则  
+    sse.addEventListener(&#39;typeName&#39;, function(e) &#123;
+        console.log(e.data)
+    &#125;)
+&#125;
+
+</code></pre>
+<h2 id="websocket"><a href="#websocket" class="headerlink" title="websocket"></a>websocket</h2><p>WebSocket 是一种用于创建全双工通信的协议，允许客户端和服务器之间的通信。它与 HTTP 协议不同，它使用 TCP 协议进行通信，而不是 HTTP 协议。WebSocket 是一种用于创建持久连接的协议，允许客户端和服务器之间进行双向通信。  </p>
+<p>最常见的应用场景是实时聊天、游戏、视频会议等场景。WebSocket 可以在浏览器和服务器之间建立持久连接，从而实现实时通信。  </p>
+<p>前端代码演示:  </p>
+<pre><code class="js">const sendWebSocket = () =&gt; &#123;
+    const ws = new WebSocket(&#39;ws://localhost:3000/ws&#39;)
+    //检测连接状态的API
+    ws.onopen = function() &#123;
+        console.log(&#39;连接成功&#39;)
+    &#125;
+    ws.onclose = function() &#123;
+        console.log(&#39;连接关闭&#39;)
+    &#125;
+    //发送数据给服务器
+    ws.send(&#39;hello&#39;)
+&#125;
+
+//获取服务器返回的数据
+const getWebSocket = () =&gt; &#123;
+    ws.addEventListener(&#39;typeName&#39;,(e) =&gt; &#123;
+        console.log(e.data)
+    &#125;)
+&#125;
+</code></pre>
+<p><del>轮询大法好</del>  </p>
+<blockquote>
+<p>写于西13</p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2024" class="archive-year">2024</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/24/%E6%B3%A8%E5%86%8C%E5%85%A8%E5%B1%80%E7%BB%84%E4%BB%B6%E5%92%8C%E8%AE%A4%E8%AF%86%E9%80%92%E5%BD%92%E7%BB%84%E4%BB%B6/" class="archive-article-date">
-  	<time datetime="2024-04-24T09:42:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-24</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/24/%E6%B3%A8%E5%86%8C%E5%85%A8%E5%B1%80%E7%BB%84%E4%BB%B6%E5%92%8C%E8%AE%A4%E8%AF%86%E9%80%92%E5%BD%92%E7%BB%84%E4%BB%B6/">注册全局组件、认识递归组件和动态组件</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">全局组件</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">递归组件</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">动态组件</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/07/09/%E7%BD%91%E7%BB%9C%E9%95%BF%E9%93%BE%E6%8E%A5-SSE%E4%B8%8Ewebsocket/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/23/%E5%88%9D%E8%AF%86bem%E6%9E%B6%E6%9E%84%E5%92%8Csass%E9%A2%84%E5%A4%84%E7%90%86%E5%99%A8/" class="archive-article-date">
-  	<time datetime="2024-04-23T08:09:53.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-23</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2024/07/08/ajax%E4%B8%8Efetch/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">ajax与fetch全套</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/23/%E5%88%9D%E8%AF%86bem%E6%9E%B6%E6%9E%84%E5%92%8Csass%E9%A2%84%E5%A4%84%E7%90%86%E5%99%A8/">初识bem架构和sass预处理器</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">sass</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">css</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">bem</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SSE"><span class="toc-number">1.</span> <span class="toc-text">SSE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#websocket"><span class="toc-number">2.</span> <span class="toc-text">websocket</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+        
+    </div>
+</aside>
+
+
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/23/%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E5%A4%8D%E9%80%89%E6%A1%86%E7%9A%84%E6%96%B9%E6%B3%95%E9%80%BB%E8%BE%91/" class="archive-article-date">
-  	<time datetime="2024-04-23T03:10:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-23</time>
-</a>
-        </div>
-    	 
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/23/%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E5%A4%8D%E9%80%89%E6%A1%86%E7%9A%84%E6%96%B9%E6%B3%95%E9%80%BB%E8%BE%91/">批量操作复选框的方法逻辑</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">方法逻辑</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">typescript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">复选框</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/20/Vue3%E4%B8%AD%E7%9A%84watch%E4%BE%A6%E5%90%AC%E5%99%A8/" class="archive-article-date">
-  	<time datetime="2024-04-20T13:31:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/20/Vue3%E4%B8%AD%E7%9A%84watch%E4%BE%A6%E5%90%AC%E5%99%A8/">Vue3中的watch侦听器</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">watch</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/20/Vue3%E4%B8%AD%E7%9A%84computed%E5%87%BD%E6%95%B0/" class="archive-article-date">
-  	<time datetime="2024-04-20T08:28:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/20/Vue3%E4%B8%AD%E7%9A%84computed%E5%87%BD%E6%95%B0/">Vue3中的computed函数</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">computed</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/17/Vue3%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/" class="archive-article-date">
-  	<time datetime="2024-04-17T11:18:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/17/Vue3%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/">Vue3的响应式原理</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">响应式</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/15/%E9%87%8D%E8%AF%86Ref/" class="archive-article-date">
-  	<time datetime="2024-04-15T15:34:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/15/%E9%87%8D%E8%AF%86Ref/">重识Ref</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Ref</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/" class="archive-article-date">
-  	<time datetime="2024-04-14T06:21:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/">diff算法--手撕子节点更新策略</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">vue源码</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">diff算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/12/diff%E7%AE%97%E6%B3%95-patch%E5%87%BD%E6%95%B0%E7%9A%84%E8%A1%A5%E5%85%A8/" class="archive-article-date">
-  	<time datetime="2024-04-12T13:37:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/12/diff%E7%AE%97%E6%B3%95-patch%E5%87%BD%E6%95%B0%E7%9A%84%E8%A1%A5%E5%85%A8/">diff算法--patch函数补全</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">vue源码</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">diff算法</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">patch</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/10/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95pacth%E5%87%BD%E6%95%B0/" class="archive-article-date">
-  	<time datetime="2024-04-10T09:30:59.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-10</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/10/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95pacth%E5%87%BD%E6%95%B0/">diff算法--手撕patch函数</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">vue源码</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">diff算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/2024/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/archives/2024/">1</a><a class="page-number" href="/archives/2024/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/archives/2024/page/4/">4</a><a class="extend next" rel="next" href="/archives/2024/page/4/">Next &amp;raquo;</a>
-    </nav>
   
 
 
@@ -631,8 +366,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
