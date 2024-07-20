@@ -6,26 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>输入url按下回车,发生了什么 | 离谱blog</title>
+  <title>Tag: Vue的设计与实现 | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="诶这个问题面试的时候作为技术的第一个问题没回答出来,连夜学习计网">
-<meta property="og:type" content="article">
-<meta property="og:title" content="输入url按下回车,发生了什么">
-<meta property="og:url" content="http://xixiibn5100.github.io/2024/07/07/%E8%BE%93%E5%85%A5url%E6%8C%89%E4%B8%8B%E5%9B%9E%E8%BD%A6-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/index.html">
+  <meta name="description" content="超级小白的博客">
+<meta property="og:type" content="website">
+<meta property="og:title" content="离谱blog">
+<meta property="og:url" content="http://xixiibn5100.github.io/tags/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="诶这个问题面试的时候作为技术的第一个问题没回答出来,连夜学习计网">
+<meta property="og:description" content="超级小白的博客">
 <meta property="og:locale">
-<meta property="og:image" content="http://xixiibn5100.github.io/assets/img/tcpLink.png">
-<meta property="og:image" content="http://xixiibn5100.github.io/assets/img/tcpClose.png">
-<meta property="og:image" content="http://xixiibn5100.github.io/assets/img/cssdom.png">
-<meta property="og:image" content="http://xixiibn5100.github.io/assets/img/reflow.png">
-<meta property="article:published_time" content="2024-07-07T15:01:30.000Z">
-<meta property="article:modified_time" content="2024-07-07T15:42:16.512Z">
 <meta property="article:author" content="xixiIBN5100">
-<meta property="article:tag" content="网络">
-<meta property="article:tag" content="面试">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://xixiibn5100.github.io/assets/img/tcpLink.png">
   
     <link rel="alternative" href="/atom.xml" title="离谱blog" type="application/atom+xml">
   
@@ -153,209 +144,60 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-输入url按下回车-发生了什么" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      输入url按下回车,发生了什么
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2024" class="archive-year">2024</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2024/07/20/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p1/" class="archive-article-date">
+  	<time datetime="2024-07-20T06:06:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-20</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2024/07/20/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p1/">Vue的设计与实现----响应系统的作用与实现(p1)</a>
     </h1>
   
 
-        
-        <a href="/2024/07/07/%E8%BE%93%E5%85%A5url%E6%8C%89%E4%B8%8B%E5%9B%9E%E8%BD%A6-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" class="archive-article-date">
-  	<time datetime="2024-07-07T15:01:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>诶这个问题面试的时候作为技术的第一个问题没回答出来,连夜学习计网  </p>
-<span id="more"></span>
-
-<h2 id="DNS查询"><a href="#DNS查询" class="headerlink" title="DNS查询"></a>DNS查询</h2><p>输入url,回车, 浏览器会发起DNS查询, 浏览器会向DNS服务器发送请求, DNS服务器会返回IP地址, 浏览器会根据IP地址, 访问网站  </p>
-<h3 id="DNS查询顺序"><a href="#DNS查询顺序" class="headerlink" title="DNS查询顺序"></a>DNS查询顺序</h3><ol>
-<li>浏览器自身DNS</li>
-<li>操作系统DNS</li>
-<li>本地后host文件</li>
-<li>向域名服务器发起请求</li>
-</ol>
-<h4 id="向域名服务器发起请求的规则"><a href="#向域名服务器发起请求的规则" class="headerlink" title="向域名服务器发起请求的规则"></a>向域名服务器发起请求的规则</h4><ol>
-<li>本地DNS服务器  </li>
-<li>根域名服务器</li>
-<li>顶级域名服务器</li>
-<li>权威域名服务器</li>
-</ol>
-<p>从上到下查询,命中则跳转至建立链接过程  </p>
-<h2 id="建立TCP链接"><a href="#建立TCP链接" class="headerlink" title="建立TCP链接"></a>建立TCP链接</h2><p><img src="/assets/img/tcpLink.png"></p>
-<h2 id="发送HTTP请求"><a href="#发送HTTP请求" class="headerlink" title="发送HTTP请求"></a>发送HTTP请求</h2><h2 id="浏览器缓存"><a href="#浏览器缓存" class="headerlink" title="浏览器缓存"></a>浏览器缓存</h2><p>两种缓存策略,强缓存和协商缓存  </p>
-<h3 id="强缓存"><a href="#强缓存" class="headerlink" title="强缓存"></a>强缓存</h3><p>HTTP报文头中包含Expires或者Cache-Control:max-age,浏览器会缓存资源,直到过期时间  </p>
-<p>举例:  </p>
-<p><code>Cache-Control: max-age=3600</code> 缓存时间为1小时<br><code>Expires: Wed, 08 Jul 2020 08:01:01 GMT</code> 缓存时间为2020年7月8日8点1分1秒  </p>
-<h3 id="协商缓存"><a href="#协商缓存" class="headerlink" title="协商缓存"></a>协商缓存</h3><p>浏览器会向服务器发送请求,请求报文头中包含<code>If-Modified-Since</code>或者<code>If-None-Match</code>  </p>
-<p>两种策略:  </p>
-<ul>
-<li>当服务端发现资源最后修改时间和 <code>If-moditied-since</code> 值相等，代表资源从该时间后再未改变过。  </li>
-<li><code>Etag</code> 的值没有规定一般是文件hash，当然你也可以设置版本号之类的和 <code>If-None-Match</code> 值对比。</li>
-</ul>
-<p>如果没变化,服务端返回 304 (Not Modified）状态码，表示资源没有改变，并且响应体为空。浏览器拿到后，就知道原本可能过期的缓存其实还可以继续使用。<br>如果资源改变了，就会返回 200，且响应体带上最新资源。  </p>
-<h2 id="TCP四次挥手"><a href="#TCP四次挥手" class="headerlink" title="TCP四次挥手"></a>TCP四次挥手</h2><p><img src="/assets/img/tcpClose.png">  </p>
-<h2 id="渲染DOM树"><a href="#渲染DOM树" class="headerlink" title="渲染DOM树"></a>渲染DOM树</h2><h3 id="html"><a href="#html" class="headerlink" title="html"></a>html</h3><p>HTML解析器将HTML文本解析为DOM树，然后交给渲染引擎渲染。 </p>
-<h3 id="css"><a href="#css" class="headerlink" title="css"></a>css</h3><p>CSS解析器将CSS文本解析为CSSOM树，然后交给渲染引擎渲染。  </p>
-<p><img src="/assets/img/cssdom.png"></p>
-<p><strong>回流与重绘</strong>  </p>
-<h4 id="回流"><a href="#回流" class="headerlink" title="回流"></a>回流</h4><p><img src="/assets/img/reflow.png">  </p>
-<h4 id="重绘"><a href="#重绘" class="headerlink" title="重绘"></a>重绘</h4><p>页面中元素样式的改变并不影响它在文档流中的位置(color,background-color等等),浏览器会将新样式赋予元素并重新绘制他.  </p>
-<h2 id="V8引擎解析js"><a href="#V8引擎解析js" class="headerlink" title="V8引擎解析js"></a>V8引擎解析js</h2><p><del>这个部分能单独开一篇博客将(挖坑)</del></p>
-<p>极限加更</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">面试</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Vue的设计与实现</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/07/07/%E8%BE%93%E5%85%A5url%E6%8C%89%E4%B8%8B%E5%9B%9E%E8%BD%A6-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2024/07/08/ajax%E4%B8%8Efetch/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          ajax与fetch全套
-        
-      </div>
-    </a>
   
   
-    <a href="/2024/07/07/router4%E6%B1%87%E6%80%BB-p2/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">router4汇总(p2)</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#DNS%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.</span> <span class="toc-text">DNS查询</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DNS%E6%9F%A5%E8%AF%A2%E9%A1%BA%E5%BA%8F"><span class="toc-number">1.1.</span> <span class="toc-text">DNS查询顺序</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%91%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%8F%91%E8%B5%B7%E8%AF%B7%E6%B1%82%E7%9A%84%E8%A7%84%E5%88%99"><span class="toc-number">1.1.1.</span> <span class="toc-text">向域名服务器发起请求的规则</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%BA%E7%AB%8BTCP%E9%93%BE%E6%8E%A5"><span class="toc-number">2.</span> <span class="toc-text">建立TCP链接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%91%E9%80%81HTTP%E8%AF%B7%E6%B1%82"><span class="toc-number">3.</span> <span class="toc-text">发送HTTP请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98"><span class="toc-number">4.</span> <span class="toc-text">浏览器缓存</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%BA%E7%BC%93%E5%AD%98"><span class="toc-number">4.1.</span> <span class="toc-text">强缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E5%95%86%E7%BC%93%E5%AD%98"><span class="toc-number">4.2.</span> <span class="toc-text">协商缓存</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="toc-number">5.</span> <span class="toc-text">TCP四次挥手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%B2%E6%9F%93DOM%E6%A0%91"><span class="toc-number">6.</span> <span class="toc-text">渲染DOM树</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#html"><span class="toc-number">6.1.</span> <span class="toc-text">html</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#css"><span class="toc-number">6.2.</span> <span class="toc-text">css</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9E%E6%B5%81"><span class="toc-number">6.2.1.</span> <span class="toc-text">回流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%8D%E7%BB%98"><span class="toc-number">6.2.2.</span> <span class="toc-text">重绘</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#V8%E5%BC%95%E6%93%8E%E8%A7%A3%E6%9E%90js"><span class="toc-number">7.</span> <span class="toc-text">V8引擎解析js</span></a></li></ol>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
-  
+    
 
 
           </div>
@@ -375,9 +217,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
