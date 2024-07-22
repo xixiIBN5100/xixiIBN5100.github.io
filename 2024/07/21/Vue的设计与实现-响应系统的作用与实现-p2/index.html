@@ -6,17 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>Vue的设计与实现----响应系统的作用与实现(p1) | 离谱blog</title>
+  <title>Vue的设计与实现----响应系统的作用与实现(p2) | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面:刚刚休息完一段时间,准备开始暑假的学习,除了做一些项目的开发,我更想去探究一下框架的底层实现,但是阅读源码总是非常困难的,特别是Vue这样优秀的框架.但学习到的底层代码思想,是写普通项目接触不到的东西,还是希望自己能够坚持下去">
+  <meta name="description" content="嵌套的effect与effect栈唉又是一个响应系统的拦路虎">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Vue的设计与实现----响应系统的作用与实现(p1)">
-<meta property="og:url" content="http://xixiibn5100.github.io/2024/07/20/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p1/index.html">
+<meta property="og:title" content="Vue的设计与实现----响应系统的作用与实现(p2)">
+<meta property="og:url" content="http://xixiibn5100.github.io/2024/07/21/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p2/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="写在前面:刚刚休息完一段时间,准备开始暑假的学习,除了做一些项目的开发,我更想去探究一下框架的底层实现,但是阅读源码总是非常困难的,特别是Vue这样优秀的框架.但学习到的底层代码思想,是写普通项目接触不到的东西,还是希望自己能够坚持下去">
+<meta property="og:description" content="嵌套的effect与effect栈唉又是一个响应系统的拦路虎">
 <meta property="og:locale">
-<meta property="article:published_time" content="2024-07-20T06:06:05.000Z">
-<meta property="article:modified_time" content="2024-07-20T12:14:08.135Z">
+<meta property="article:published_time" content="2024-07-21T13:58:42.000Z">
+<meta property="article:modified_time" content="2024-07-22T14:58:40.884Z">
 <meta property="article:author" content="xixiIBN5100">
 <meta property="article:tag" content="Vue的设计与实现">
 <meta name="twitter:card" content="summary">
@@ -147,66 +147,105 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Vue的设计与实现-响应系统的作用与实现-p1" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Vue的设计与实现-响应系统的作用与实现-p2" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Vue的设计与实现----响应系统的作用与实现(p1)
+      Vue的设计与实现----响应系统的作用与实现(p2)
     </h1>
   
 
         
-        <a href="/2024/07/20/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p1/" class="archive-article-date">
-  	<time datetime="2024-07-20T06:06:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-20</time>
+        <a href="/2024/07/21/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p2/" class="archive-article-date">
+  	<time datetime="2024-07-21T13:58:42.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-21</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><strong>写在前面:</strong><br>刚刚休息完一段时间,准备开始暑假的学习,除了做一些项目的开发,我更想去探究一下框架的底层实现,但是阅读源码总是非常困难的,特别是Vue这样优秀的框架.但学习到的底层代码思想,是写普通项目接触不到的东西,还是希望自己能够坚持下去  </p>
+        <h2 id="嵌套的effect与effect栈"><a href="#嵌套的effect与effect栈" class="headerlink" title="嵌套的effect与effect栈"></a>嵌套的effect与effect栈</h2><p><del>唉又是一个响应系统的拦路虎</del>    </p>
 <span id="more"></span>
 
-<h2 id="响应式数据与副作用函数"><a href="#响应式数据与副作用函数" class="headerlink" title="响应式数据与副作用函数"></a>响应式数据与副作用函数</h2><h3 id="副作用函数"><a href="#副作用函数" class="headerlink" title="副作用函数"></a>副作用函数</h3><p>副作用函数指的是会产生副作用的函数 <del>真是一句废话</del><br>用人话来说就是<code>effect</code>函数的执行会直接或间接影响其他函数的执行.副作用很容易产生,比如修改一个全局变量的函数就是一个副作用函数,因为会导致其他访问了该变量的函数的执行.  </p>
-<h3 id="响应式数据"><a href="#响应式数据" class="headerlink" title="响应式数据"></a>响应式数据</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123; <span class="attr">text</span>: <span class="string">&#x27;hello word&#x27;</span> &#125; </span><br><span class="line"><span class="keyword">function</span> <span class="title function_">effect</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="property">body</span>.<span class="property">innerText</span> = obj.<span class="property">text</span></span><br><span class="line">&#125;</span><br><span class="line">obj.<span class="property">text</span> = <span class="string">&#x27;hello vue&#x27;</span> <span class="comment">//修改obj.text的值</span></span><br></pre></td></tr></table></figure>
-<p>上面代码中的effect函数会设置innerText为obj.text的值,当修改obj.text的值时,我们希望effect函数会重新执行.如果能够实现这个目标,那么obj就是响应式数据.显然,现在是不能的  </p>
-<h2 id="响应式数据的基本实现"><a href="#响应式数据的基本实现" class="headerlink" title="响应式数据的基本实现"></a>响应式数据的基本实现</h2><p>不难发现  </p>
-<ol>
-<li>当副作用函数执行时,会触发 <strong>读取</strong> 操作</li>
-<li>当修改数据时,会触发 <strong>设置</strong> 操作</li>
-</ol>
-<p>如果我们能拦截一个对象的读取操作和设置操作,事情就变得简单了.在读取操作的时候,我们吧副作用函数存在一个桶里面,当设置操作的时候,我们遍历桶,依次执行副作用函数,就可以实现响应数据  </p>
-<p>在ES2015+,我们可以通过Proxy实现拦截操作,在Proxy中,我们可以拦截读取操作和设置操作,这也是Vue3响应式数据的实现原理  </p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123; <span class="attr">text</span>: <span class="string">&#x27;hello word&#x27;</span> &#125;</span><br><span class="line"><span class="keyword">const</span> bucket = <span class="keyword">new</span> <span class="title class_">Set</span>()</span><br><span class="line"><span class="keyword">const</span> proxy = <span class="keyword">new</span> <span class="title class_">Proxy</span>(obj, &#123;</span><br><span class="line">    <span class="title function_">get</span>(<span class="params">target, key</span>) &#123;</span><br><span class="line">    bucket.<span class="title function_">add</span>(effect)</span><br><span class="line">    <span class="keyword">return</span> target[key]</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title function_">set</span>(<span class="params">target, key, newValue</span>) &#123;</span><br><span class="line">    target[key] = newValue</span><br><span class="line">    bucket.<span class="title function_">forEach</span>(<span class="function"><span class="params">fn</span> =&gt;</span> <span class="title function_">fn</span>())</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>effect是可以发生嵌套的,比如  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> temp1,temp2</span><br><span class="line"><span class="keyword">const</span> obj = &#123;<span class="attr">bar</span>: <span class="number">1</span>, <span class="attr">foo</span>: <span class="number">2</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">effect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;first&#x27;</span>)</span><br><span class="line">    <span class="title function_">effect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;second&#x27;</span>)</span><br><span class="line">        temp1 = obj.<span class="property">bar</span></span><br><span class="line">    &#125;)</span><br><span class="line">    temp2 = obj.<span class="property">foo</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 
-<p>这只是一个非常简单的实现,它还有很多缺陷,我们会在后面章节中一步步完善,但不变的就是这种收相关依赖,触发更新的思想.  </p>
-<h2 id="设计一个完善的响应式系统"><a href="#设计一个完善的响应式系统" class="headerlink" title="设计一个完善的响应式系统"></a>设计一个完善的响应式系统</h2><p>之前有一篇文章介绍了匿名副作用函数,track和trigger的封装,如下  </p>
-<p><a href="https://xixiibn5100.github.io/2024/04/17/Vue3%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/">Vue3的响应式原理</a></p>
-<h2 id="分支切换"><a href="#分支切换" class="headerlink" title="分支切换"></a>分支切换</h2><p>这一章节我们主要是避免一些不必要的更新.  </p>
-<p>我们来看这一个栗子  </p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> data = &#123; <span class="attr">ok</span>: <span class="literal">true</span>, <span class="attr">text</span>: <span class="string">&#x27;hello&#x27;</span>&#125;</span><br><span class="line"><span class="keyword">const</span> obj = <span class="keyword">new</span> <span class="title class_">Proxy</span>(data, &#123; <span class="comment">/*...*/</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="title function_">effect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="property">body</span>.<span class="property">innerText</span> = obj.<span class="property">ok</span> ? obj.<span class="property">text</span> : <span class="string">&#x27;not&#x27;</span> <span class="comment">//三元表达式  </span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">可以发现,当一开始为true的时候,obj.text会被读取,触发有关依赖更新.当obj.ok的值为false的时候,obj.text不会被读取,但是会触发更新,这是不必要的更新,我们希望obj.ok为false的时候,obj.text不会被读取,也不会触发更新.  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">解决这个问题的方法很简单,每次副作用函数执行前,将它从相关联的依赖集合中删除就可以啦,由此,我们来完善一下之前的副作用函数  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>js</span><br><span class="line"><span class="keyword">let</span> activeEffect</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">effect</span>(<span class="params">fn</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">effectFn</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">        <span class="title function_">cleanup</span>(effectFn)<span class="comment">//清除依赖</span></span><br><span class="line">        activeEffect = effectFn</span><br><span class="line">        <span class="title function_">fn</span>()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//用来储存与该副作用相关联的依赖集合</span></span><br><span class="line">    effectFn.<span class="property">deps</span> = []</span><br><span class="line">    <span class="title function_">effectFn</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当我们修改obj.foo的值的时候,会发现触发的是内层副作用函数的执行,而我们期望是外层副作用函数的执行  </p>
+<p>这是因为在调用内层effect函数的时候,activeEffect被覆盖,而且不会恢复原来的值,这就会导致即使是外层函数收集依赖,收集到的也是内层函数的依赖  </p>
+<p>于是我们需要维护一个effect栈,当调用effect函数的时候,将当前effect压入栈中,当effect函数执行完毕的时候,将栈顶的effect弹出,这样当修改obj.foo的时候,就会触发外层函数的副作用函数执行  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> acctiveEffect = <span class="literal">null</span></span><br><span class="line"><span class="keyword">let</span> effectStack = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">effect</span>(<span class="params">fn</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">effectFn</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">        <span class="title function_">cleanup</span>(effectFn)</span><br><span class="line">        acctiveEffect = effectFn</span><br><span class="line">        effectStack.<span class="title function_">push</span>(effectFn)</span><br><span class="line">        <span class="title function_">fn</span>()</span><br><span class="line">        effectStack.<span class="title function_">pop</span>()<span class="comment">//弹出</span></span><br><span class="line">        acctiveEffect = effectStack[effectStack.<span class="property">length</span> - <span class="number">1</span>]<span class="comment">//还原</span></span><br><span class="line">    &#125;</span><br><span class="line">    effectFn.<span class="property">deps</span> = []</span><br><span class="line">    <span class="title function_">effectFn</span>()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p>收集相关联的依赖集合操作在track函数中实现.</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">track</span>(<span class="params">target, key</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!activeEffect) <span class="keyword">return</span></span><br><span class="line">    <span class="keyword">let</span> depsMap = bucket.<span class="title function_">get</span>(target)</span><br><span class="line">    <span class="keyword">if</span> (!depsMap) &#123;</span><br><span class="line">        bucket.<span class="title function_">set</span>(target, (depsMap = <span class="keyword">new</span> <span class="title class_">Map</span>()))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> dep = depsMap.<span class="title function_">get</span>(key)</span><br><span class="line">    <span class="keyword">if</span> (!dep) &#123;</span><br><span class="line">        depsMap.<span class="title function_">set</span>(key, (dep = <span class="keyword">new</span> <span class="title class_">Set</span>()))</span><br><span class="line">    &#125;</span><br><span class="line">    dep.<span class="title function_">add</span>(activeEffect)</span><br><span class="line">    <span class="comment">// dep就是一个与当前副作用函数相关的依赖集合</span></span><br><span class="line">    activeEffect.<span class="property">deps</span>.<span class="title function_">push</span>(dep)</span><br><span class="line">&#125;</span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">有了这个收集的操作,在effect函数中我们先调用cleanup函数,将当前副作用函数从相关联的依赖集合中删除.下面是cleanup函数的简单实现.  </span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>js</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">cleanup</span>(<span class="params">effectFn</span>) &#123;</span><br><span class="line">    <span class="comment">//遍历数组集合</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; effectFn.<span class="property">deps</span>.<span class="property">length</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">const</span> dep = effectFn.<span class="property">deps</span>[i]</span><br><span class="line">        dep.<span class="title function_">delete</span>(effectFn)</span><br><span class="line">    &#125;</span><br><span class="line">    effectFn.<span class="property">deps</span>.<span class="property">length</span> = <span class="number">0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="调度执行"><a href="#调度执行" class="headerlink" title="调度执行"></a>调度执行</h2><p>可调度性是响应系统非常重要的特性,关在在于trigger函数触发触发副作用函数重新执行的时候,我们有能力控制副作用函数执行的时机,次数以及方式  </p>
+<p>那么我们就要在effect函数上加点工  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">effect</span>(<span class="params">fn, options = &#123;&#125;</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">effectFn</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">        <span class="title function_">cleanup</span>(effectFn)</span><br><span class="line">        acctiveEffect = effectFn</span><br><span class="line">        effectStack.<span class="title function_">push</span>(effectFn)</span><br><span class="line">        <span class="title function_">fn</span>()</span><br><span class="line">        effectStack.<span class="title function_">pop</span>()</span><br><span class="line">        acctiveEffect = effectStack[effectStack.<span class="property">length</span> - <span class="number">1</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    effectFn.<span class="property">options</span> = options</span><br><span class="line">    effectFn.<span class="property">deps</span> = []</span><br><span class="line">    <span class="title function_">effectFn</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>写到这里,我们看似能够完美的解决这个问题.但是实际操作的时候,会出现无限循环的问题,这个问题的源头是trigger函数  </p>
-<p>在trigger函数内部有一个Set集合存放着相关副作用函数,当副作用函数执行的时候,会调用cleanup进行清除,但是副作用函数的执行有回让他重新被收集到集合中,但此时遍历集合的操作还在进行中,这个操作就像:  </p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> set = <span class="keyword">new</span> <span class="title class_">Set</span>([<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">set.<span class="title function_">forEach</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    set.<span class="title function_">delete</span>(<span class="number">1</span>)</span><br><span class="line">    set.<span class="title function_">add</span>(<span class="number">1</span>)</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;死循环&#x27;</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>在这里,我们给effect加上了option参数,在trigger函数中触发时,可以直接调用用户提供的调度函数  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">effectsToRun.<span class="title function_">forEach</span>(<span class="function"><span class="params">effectFn</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (effectFn.<span class="property">options</span>.<span class="property">scheduler</span>) &#123;</span><br><span class="line">        effectFn.<span class="property">options</span>.<span class="title function_">scheduler</span>(effectFn)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="title function_">effectFn</span>()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="计算属性computed与lazy"><a href="#计算属性computed与lazy" class="headerlink" title="计算属性computed与lazy"></a>计算属性computed与lazy</h2><p>有了调度器,我们也许可以来尝试实现一下计算属性computed  </p>
+<p>在这之前,我们先了解一下lazy  </p>
+<h3 id="懒执行的effect"><a href="#懒执行的effect" class="headerlink" title="懒执行的effect"></a>懒执行的effect</h3><p>lazy是effect.option的一个参数,当lazy为true的时候,effect函数不会立即执行,而是返回一个getter函数,当getter函数被调用的时候,才会执行effect函数  </p>
+<p>那么我们又又又要修改一下effect函数,在调用fn的时候,先判断lazy,如果是true,则返回一个getter函数,否则直接执行fn  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//非lazy执行</span></span><br><span class="line"><span class="keyword">if</span>(!options.<span class="property">lazy</span>)&#123;</span><br><span class="line">    <span class="title function_">effectFn</span>()</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//否则返回getter函数</span></span><br><span class="line"><span class="keyword">return</span> effectFn</span><br></pre></td></tr></table></figure>
 
-<p>这个遍历操作会一直进行下去,造成死循环  </p>
-<p>怎么解决呢?我们可以构造另一个set来遍历副作用函数  </p>
-<pre><code class="js">function trigger(target, key) &#123;
-    const depsMap = bucket.get(target)
-    if (!depsMap) return
-    const effects = depsMap.get(key)
-    const effectsToRun = new Set(effects) //创造集合副本
-    effectsToRun.forEach(effectFn =&gt; effectFn())
+<p>假如我们让effect函数计算两个数的值  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> add = <span class="title function_">effect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="function">() =&gt;</span> obj.<span class="property">foo</span> + obj.<span class="property">barsSize</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">lazy</span>: <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="title function_">add</span>()</span><br></pre></td></tr></table></figure>
+
+<p>这样我们希望在手动调用的时候能够得到和,那我们再对effect函数进行就修改  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">effect</span>(<span class="params">fn, options = &#123;&#125;</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">effectFn</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">        <span class="title function_">cleanup</span>(effectFn)</span><br><span class="line">        acctiveEffect = effectFn</span><br><span class="line">        effectStack.<span class="title function_">push</span>(effectFn)</span><br><span class="line">        <span class="keyword">const</span> res = <span class="title function_">fn</span>()</span><br><span class="line">        effectStack.<span class="title function_">pop</span>()</span><br><span class="line">        acctiveEffect = effectStack[effectStack.<span class="property">length</span> - <span class="number">1</span>]</span><br><span class="line">        <span class="keyword">return</span> res <span class="comment">//储存运算结果,调用时返回值</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="computed计算属性"><a href="#computed计算属性" class="headerlink" title="computed计算属性"></a>computed计算属性</h3><p>基于上面,我们可以来写一个computed函数,他接收一个getter函数  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">computed</span>(<span class="params">getter</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> effectFn = <span class="title function_">effect</span>(getter, &#123;</span><br><span class="line">        <span class="attr">lazy</span>: <span class="literal">true</span></span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">const</span> obj = &#123;</span><br><span class="line">        <span class="keyword">get</span> <span class="title function_">value</span>() &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="title function_">effectFn</span>()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> obj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>computed函数返回一个对象,对象有一个value属性,当访问value属性的时候,会调用effectFn函数,并返回effectFn函数的返回值  </p>
+<p>然而这里有一个问题,我们每次访问value属性的时候,都会执行effectFn函数,这显然是不合理的,我们希望的是,当value属性被访问的时候,如果依赖的响应式数据没有发生改变,则不重新执行effectFn函数,而是直接返回上次计算的值  </p>
+<p>这需要我们对值进行缓存功能  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">computed</span>(<span class="params">getter</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> value </span><br><span class="line">    <span class="keyword">let</span> dirty = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">const</span> effectFn = <span class="title function_">effect</span>(getter, &#123;</span><br><span class="line">        <span class="attr">lazy</span>: <span class="literal">true</span>,</span><br><span class="line">    &#125;)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">const</span> obj = &#123;</span><br><span class="line">        <span class="keyword">get</span> <span class="title function_">value</span>() &#123;</span><br><span class="line">            <span class="keyword">if</span>(dirty)&#123;</span><br><span class="line">                value = <span class="title function_">effectFn</span>()</span><br><span class="line">                dirty = <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> value</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> obj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样写依然不完整,因为dirty的值被改变后一直是false,即不会再触发重新计算,这时候就需要我们的调度器出场啦  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">computed</span>(<span class="params">getter</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> value</span><br><span class="line">    <span class="keyword">let</span> dirty = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">const</span> effectFn = <span class="title function_">effect</span>(getter, &#123;</span><br><span class="line">        <span class="attr">lazy</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="title function_">scheduler</span>(<span class="params"></span>) &#123;</span><br><span class="line">            dirty = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">const</span> obj = &#123;</span><br><span class="line">        <span class="keyword">get</span> <span class="title function_">value</span>() &#123;</span><br><span class="line">            <span class="keyword">if</span>(dirty)&#123;</span><br><span class="line">                value = <span class="title function_">effectFn</span>()</span><br><span class="line">                dirty = <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> obj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样,在每次getter函数中所依赖的响应式数据发生变化大时候,dirty的值会被设置为true,当访问value属性的时候,会重新执行effectFn函数,并返回effectFn函数的返回值,当依赖的响应式数据没有发生改变的时候,直接返回上次计算的值  </p>
+<p>但是我们这套系统还不完善 <del>还有高手</del>  </p>
+<pre><code class="js">const sum = computed(() =&gt; obj.foo + obj.bar)
+
+effect(() =&gt; &#123;
+    console.log(sum.value)
+&#125;)
+
+obj.foo++
+</code></pre>
+<p>我们希望在自增操作以后触发副作用函数,但是实际上我们现在的代码是做不到值一点的.因为computed函数内的effect只有真正读取计算属性的值的时候才会执行.外层的effect不会被内层effect中的响应式数据收集.  </p>
+<p>所以当读取计算属性的值的时候,手动调用track函数,当计算属性依赖的响应式数据发生改变的时候,手动调用trigger函数.  </p>
+<pre><code class="js">function computed(getter) &#123;
+    let value
+    let dirty = true
+    
+    const effectFn = effect(getter, &#123;
+        lazy: true,
+        scheduler() &#123;
+            dirty = true
+            // 当计算属性依赖的响应式数据发生变化的时候,手动调用trigger触发响应
+            trigger(obj, &#39;value&#39;)
+        &#125;
+    &#125;)
+    
+    const obj = &#123;
+        get value() &#123;
+            if(dirty) &#123;
+                value = effectFn() 
+                dirty = false
+            &#125;
+            // 当读取value的时候,手动调用track函数进行追踪
+            track(obj,&#39;value&#39;)
+            return value
+        &#125;
+    &#125;
+    return obj
 &#125;
 </code></pre>
-<p>到此,我们算是解决了这个性能优化的问题  winnnnnnn  </p>
+<p>这样就能够解决这个问题啦</p>
 <blockquote>
 <p>写于西13</p>
 </blockquote>
@@ -279,7 +318,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/07/20/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p1/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/07/21/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p2/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -293,18 +332,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2024/07/21/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p2/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Vue的设计与实现----响应系统的作用与实现(p2)
-        
-      </div>
-    </a>
   
-  
-    <a href="/2024/07/09/%E7%BD%91%E7%BB%9C%E9%95%BF%E9%93%BE%E6%8E%A5-SSE%E4%B8%8Ewebsocket/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">网络长链接----SSE与websocket</div>
+    <a href="/2024/07/20/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Vue的设计与实现----响应系统的作用与实现(p1)</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -331,7 +361,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%8D%E5%BA%94%E5%BC%8F%E6%95%B0%E6%8D%AE%E4%B8%8E%E5%89%AF%E4%BD%9C%E7%94%A8%E5%87%BD%E6%95%B0"><span class="toc-number">1.</span> <span class="toc-text">响应式数据与副作用函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%AF%E4%BD%9C%E7%94%A8%E5%87%BD%E6%95%B0"><span class="toc-number">1.1.</span> <span class="toc-text">副作用函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%93%8D%E5%BA%94%E5%BC%8F%E6%95%B0%E6%8D%AE"><span class="toc-number">1.2.</span> <span class="toc-text">响应式数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%8D%E5%BA%94%E5%BC%8F%E6%95%B0%E6%8D%AE%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">响应式数据的基本实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E5%AE%8C%E5%96%84%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F"><span class="toc-number">3.</span> <span class="toc-text">设计一个完善的响应式系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%94%AF%E5%88%87%E6%8D%A2"><span class="toc-number">4.</span> <span class="toc-text">分支切换</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B5%8C%E5%A5%97%E7%9A%84effect%E4%B8%8Eeffect%E6%A0%88"><span class="toc-number">1.</span> <span class="toc-text">嵌套的effect与effect栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E5%BA%A6%E6%89%A7%E8%A1%8C"><span class="toc-number">2.</span> <span class="toc-text">调度执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7computed%E4%B8%8Elazy"><span class="toc-number">3.</span> <span class="toc-text">计算属性computed与lazy</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%87%92%E6%89%A7%E8%A1%8C%E7%9A%84effect"><span class="toc-number">3.1.</span> <span class="toc-text">懒执行的effect</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#computed%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7"><span class="toc-number">3.2.</span> <span class="toc-text">computed计算属性</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
