@@ -146,6 +146,84 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-keep-alive缓存组件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2024/04/25/keep-alive%E7%BC%93%E5%AD%98%E7%BB%84%E4%BB%B6/">keep-alive缓存组件</a>
+    </h1>
+  
+
+        
+        <a href="/2024/04/25/keep-alive%E7%BC%93%E5%AD%98%E7%BB%84%E4%BB%B6/" class="archive-article-date">
+  	<time datetime="2024-04-25T12:07:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-25</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="keep-alive缓存组件"><a href="#keep-alive缓存组件" class="headerlink" title="keep-alive缓存组件"></a>keep-alive缓存组件</h2><h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p>当用户切换Tab页的时候,我们需要缓存住用户已经输入的信息,当切换回来的时候不让已经填写的数据清空,就使用keep-alive缓存组件  </p>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">提高用户体验</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">缓存组件</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2024/04/25/keep-alive%E7%BC%93%E5%AD%98%E7%BB%84%E4%BB%B6/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-异步组件-骨架屏案例" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -844,87 +922,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2024/04/15/%E9%87%8D%E8%AF%86Ref/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-diff算法-手撕子节点更新策略" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/">diff算法--手撕子节点更新策略</a>
-    </h1>
-  
-
-        
-        <a href="/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/" class="archive-article-date">
-  	<time datetime="2024-04-14T06:21:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="子节点更新策略"><a href="#子节点更新策略" class="headerlink" title="子节点更新策略"></a>子节点更新策略</h2><p>当patch的时候新旧节点都含有子节点的时候,需要找到旧节点中可以被复用的子节点.<br>封装一个函数,采用双指针法遍历虚拟dom树,找到可以复用的节点,接下来我们来手撕一下updateChildren()函数  </p>
-<blockquote>
-<p>值得一提的是,因为时间和能力有限,只能最大限度的还原此函数,只展示函数中最有魅力的算法精髓,对于一些繁琐的边界判断,可能会有所疏忽  </p>
-</blockquote>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">vue源码</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">diff算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/04/14/diff%E7%AE%97%E6%B3%95-%E6%89%8B%E6%92%95%E5%AD%90%E8%8A%82%E7%82%B9%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5/">展开全文 >></a>
         </p>
       
 
