@@ -6,16 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>Archives | 离谱blog</title>
+  <title>Vue的设计与实现----响应系统的设计与实现(p5) | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="超级小白的博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="离谱blog">
-<meta property="og:url" content="http://xixiibn5100.github.io/archives/page/2/index.html">
+  <meta name="description" content="合理的触发响应">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue的设计与实现----响应系统的设计与实现(p5)">
+<meta property="og:url" content="http://xixiibn5100.github.io/2024/07/29/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p5/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="超级小白的博客">
+<meta property="og:description" content="合理的触发响应">
 <meta property="og:locale">
+<meta property="article:published_time" content="2024-07-29T09:02:34.000Z">
+<meta property="article:modified_time" content="2024-07-29T11:07:13.274Z">
 <meta property="article:author" content="xixiIBN5100">
+<meta property="article:tag" content="Vue的设计与实现">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="离谱blog" type="application/atom+xml">
@@ -144,449 +147,255 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
+            <article id="post-Vue的设计与实现-响应系统的设计与实现-p5" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Vue的设计与实现----响应系统的设计与实现(p5)
+    </h1>
+  
+
+        
+        <a href="/2024/07/29/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p5/" class="archive-article-date">
+  	<time datetime="2024-07-29T09:02:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="合理的触发响应"><a href="#合理的触发响应" class="headerlink" title="合理的触发响应"></a>合理的触发响应</h2><span id="more"></span>
+
+<h3 id="新旧值的比较"><a href="#新旧值的比较" class="headerlink" title="新旧值的比较"></a>新旧值的比较</h3><p>首先第一个问题,当值没有发生变化大时候,我们不希望触发响应.为了满足这一点,怎么需要修改set拦截函数的代码,在调用trigger之前,检查值石佛是否真的发生了变化  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">set</span>(<span class="params">target, key, value, receiver</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> oldValue = target[key];</span><br><span class="line">    <span class="keyword">const</span> type = <span class="title class_">Object</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">hasOwnProperty</span>.<span class="title function_">call</span>(target, key) ? <span class="string">&#x27;SET&#x27;</span> : <span class="string">&#x27;ADD&#x27;</span>;</span><br><span class="line">    <span class="keyword">const</span> result = <span class="title class_">Reflect</span>.<span class="title function_">set</span>(target, key, value, receiver);</span><br><span class="line">    <span class="comment">// 不全等的时候触发响应</span></span><br><span class="line">    <span class="keyword">if</span> (oldValue !== value) &#123;</span><br><span class="line">        <span class="title function_">trigger</span>(target, key, type);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">然而这样会有一个小漏洞.我们知道`</span><span class="title class_">NaN</span> === <span class="title class_">NaN</span><span class="string">`是false,所以触发响应的条件应该再完善一下.  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>js</span><br><span class="line"><span class="keyword">if</span>(oldValue !== value &amp;&amp; (oldValue === oldValue || value === value))&#123;</span><br><span class="line">    <span class="title function_">trigger</span>(target, key, type);</span><br><span class="line">&#125;</span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">这样我们就解决了NaN的问题  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### 从原型上继承属性  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">为了讲解方便,需要封装一个`</span>reactive<span class="string">`函数,用来创建响应式对象  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>js</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">reactive</span>(<span class="params">obj</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Proxy</span>(obj, &#123;</span><br><span class="line">        <span class="comment">/*...*/</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string">栗子登场  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>js</span><br><span class="line"><span class="keyword">const</span> obj = &#123;&#125;</span><br><span class="line"><span class="keyword">const</span> proto = &#123; <span class="attr">bar</span>:<span class="number">1</span> &#125;</span><br><span class="line"><span class="keyword">const</span> child = <span class="title function_">reactive</span>(obj)</span><br><span class="line"><span class="keyword">const</span> parent = <span class="title function_">reactive</span>(proto)</span><br><span class="line"><span class="comment">// 使用parent作为child的原型  </span></span><br><span class="line"><span class="title class_">Object</span>.<span class="title function_">setPrototypeOf</span>(child, parent)</span><br><span class="line"></span><br><span class="line"><span class="title function_">effect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(child.<span class="property">bar</span>)</span><br><span class="line">&#125;)  </span><br><span class="line"></span><br><span class="line">child.<span class="property">bar</span> = <span class="number">2</span></span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">从代码中可以看出,child本身没有bar属性,值是从原型上继承下来的.但是无论如何,既然child是响应式数据,就会与副作用函数建立联系.当我们给他赋值的时候,会发现副作用函数被触发了两次,造成了不必要更新.  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">通过了解规范可以知道,如果对象自身不存在属性,那么会获取对象的原型,并且调用原型上的get方法.我们能得出一个结论:child.bar和parent.bar都与副作用函数建立了响应联系.  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">如果设置的属性不存在与对象上,那么会获取其原型,并且调用原型上的get方法.这就是为什么副作用函数会重新执行两次的原因.  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">既然知道了原因,解决方法很简单,可以吧parent.bar触发的那次副作用函数的执行屏蔽.关键在于在set拦截函数里面区分这两次更新.  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">当触发child的set拦截函数时  </span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>js</span><br><span class="line"><span class="title function_">set</span>(<span class="params">target, key, value, receiver</span>)&#123;</span><br><span class="line">    <span class="comment">//target是原始对象 obj</span></span><br><span class="line">    <span class="comment">//reciver是代理对象 child</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">当触发parent的set拦截函数时  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>js</span><br><span class="line"><span class="title function_">set</span>(<span class="params">target, key, value, receiver</span>)&#123;</span><br><span class="line">    <span class="comment">// target是原型对象 proto</span></span><br><span class="line">    <span class="comment">// receiver是代理对象 parent</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">容易发现,我们只需要判断代理对象receiver的原型是不是原始对象target,如果不是,则屏蔽这次副作用函数的执行  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">我们先完善一下reactive函数的代码  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>js</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">reactive</span>(<span class="params">obj</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> proxy = <span class="keyword">new</span> <span class="title class_">Proxy</span>(obj, &#123;</span><br><span class="line">        <span class="title function_">get</span>(<span class="params">target, key, receiver</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span>(key === <span class="string">&#x27;raw&#x27;</span>)&#123;</span><br><span class="line">                <span class="keyword">return</span> target</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="title function_">track</span>(target, key)</span><br><span class="line">            <span class="keyword">return</span> <span class="title class_">Reflect</span>.<span class="title function_">get</span>(target, key, receiver)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">这段代码的加入让代理对象可以通过raw属性读取原始数据.  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>js</span><br><span class="line">child.<span class="property">raw</span> === obj <span class="comment">//true</span></span><br><span class="line">parent.<span class="property">raw</span> === proto <span class="comment">//true</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来在完善set拦截函数中触发trigger函数的条件  </p>
+<pre><code class="js">// reciver 就是 target 的代理对象
+if(target === reciver.raw)&#123;
+    if(oldValue !== value &amp;&amp; (oldValue === oldValue || value === value))&#123;
+        trigger(target,key,type)
+    &#125;
+&#125;
+</code></pre>
+<p>这样我们就能屏蔽由原型引起的更新  </p>
+<h2 id="浅响应与深响应"><a href="#浅响应与深响应" class="headerlink" title="浅响应与深响应"></a>浅响应与深响应</h2><p>本节我们介绍reactive和shallowReactive的区别.事实上,我们目前所实现的reactive都是浅响应的  </p>
+<pre><code class="js">const obj = &#123;
+    foo:&#123;
+        bar:1
+    &#125;
+&#125;
+
+effect(() =&gt; &#123;
+    console.log(obj.foo.bar)
+&#125;)
+obj.foo.bar = 2 //不会触发响应  
+</code></pre>
+<p>这是为什么呢,让我们来审视一下代码的实现  </p>
+<pre><code class="js">function reactive(obj) &#123;
+    const proxy = new Proxy(obj, &#123;
+        get(target, key, receiver) &#123;
+            if(key === &#39;raw&#39;)&#123;
+                return target
+            &#125;
             
-  
-  
-    
-    
+            track(target, key)
+            return Reflect.get(target, key, receiver)
+        &#125;
+        //  省略其他拦截函数
+    &#125;)
+&#125;
+</code></pre>
+<p>当我们读取obj.foo.bar时,首先要读取obj.foo的值.我们直接使用<code>Reflect.get(obj, &#39;foo&#39;, receiver)</code>返回obj.foo的结果是一个普通对象,即<code>&#123; bar:1 &#125;</code>,这不是一个响应式对象,所以在副作用函数中访问obj.foo.bar时,并不会触发响应.  </p>
+<p>要解决这个问题,我们需要对<code>Reflect.get</code>返回的结果进行代理.  </p>
+<pre><code class="js">function reactive(obj) &#123;
+    const proxy = new Proxy(obj, &#123;
+        get(target, key, receiver) &#123;
+            if(key === &#39;raw&#39;)&#123;
+                return target
+            &#125;
+
+            track(target, key)
+            const result = Reflect.get(target, key, receiver)
+            if(isObject(result))&#123;
+                return reactive(result)
+            &#125;
+            return result
+        &#125;
+    &#125;)
+&#125;
+</code></pre>
+<p>这里我们使用<code>isObject</code>函数判断<code>Reflect.get</code>返回的结果是否是一个对象,如果是,则对结果进行代理.这样,当读取obj.foo.bar时,<code>Reflect.get</code>返回的结果是一个代理对象,所以当读取obj.foo.bar时,会触发响应.  </p>
+<p>然而,并不是所有情况下我们都希望深响应,这就催生了shallowReactive,即浅响应,就是只有对象的第一层属性是响应的.这需要封装一个新函数</p>
+<pre><code class="js">function createReactive(obj, shallow = false) &#123;
+    const proxy = new Proxy(obj, &#123;
+        get(target, key, receiver) &#123;
+            if(key === &#39;raw&#39;)&#123;
+                return target
+            &#125;
+            const result = Reflect.get(target, key, receiver)
+            track(target, key)
+            
+            if(shallow) &#123;
+                return result
+            &#125;
+            
+            if(isObject(result))&#123;
+                return reactive(res)
+            &#125;  
+            
+            return result
+        &#125;
+        //其他拦截函数
+    &#125;)
+&#125;
+</code></pre>
+<p>有了这个函数,我们就可以轻松实现reactive和shallowReactive了  </p>
+<pre><code class="js">function reactive(obj) &#123;
+    return createReactive(obj)
+&#125;
+
+function shallowReactive(obj) &#123;
+    return createReactive(obj, true)
+&#125;
+</code></pre>
+<p>这一p先到这里罢</p>
+<blockquote>
+<p>写于西13</p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2024" class="archive-year">2024</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/07/05/vue-router-%E8%B7%AF%E7%94%B1%E4%BC%A0%E5%8F%82/" class="archive-article-date">
-  	<time datetime="2024-07-05T14:02:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/07/05/vue-router-%E8%B7%AF%E7%94%B1%E4%BC%A0%E5%8F%82/">vue--router 路由传参</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">vue router</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Vue的设计与实现</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/07/29/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p5/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/05/28/js%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%9D%A2%E8%AF%95%E9%A2%98/" class="archive-article-date">
-  	<time datetime="2024-05-28T01:07:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-28</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2024/07/27/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p4/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Vue的设计与实现----响应系统的设计与实现(p4)</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/05/28/js%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%9D%A2%E8%AF%95%E9%A2%98/">学习小记——js面试题——API篇</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">面试题</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">js</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">API</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E7%90%86%E7%9A%84%E8%A7%A6%E5%8F%91%E5%93%8D%E5%BA%94"><span class="toc-number">1.</span> <span class="toc-text">合理的触发响应</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E6%97%A7%E5%80%BC%E7%9A%84%E6%AF%94%E8%BE%83"><span class="toc-number">1.1.</span> <span class="toc-text">新旧值的比较</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%85%E5%93%8D%E5%BA%94%E4%B8%8E%E6%B7%B1%E5%93%8D%E5%BA%94"><span class="toc-number">2.</span> <span class="toc-text">浅响应与深响应</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+        
+    </div>
+</aside>
+
+
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/05/24/webpack-%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BAVue3%E6%A1%86%E6%9E%B6/" class="archive-article-date">
-  	<time datetime="2024-05-24T02:19:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-24</time>
-</a>
-        </div>
-    	 
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/05/24/webpack-%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BAVue3%E6%A1%86%E6%9E%B6/">webpack--从0到1构建Vue3框架</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">webpack</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">配置操作</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/05/21/%E5%A4%87%E5%BF%98%E5%BD%95%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E9%80%BB%E8%BE%91/" class="archive-article-date">
-  	<time datetime="2024-05-21T06:37:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-21</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/05/21/%E5%A4%87%E5%BF%98%E5%BD%95%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E9%80%BB%E8%BE%91/">备忘录————图片上传逻辑</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">备忘录</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/05/15/Vue3%E4%B8%AD%E7%9A%84eventLoop%E5%92%8CnextTick/" class="archive-article-date">
-  	<time datetime="2024-05-15T11:14:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/05/15/Vue3%E4%B8%AD%E7%9A%84eventLoop%E5%92%8CnextTick/">Vue3中的eventLoop和nextTick</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">eventLoop</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">nextTick</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Vue底层</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/05/15/Vue3%E4%B8%AD%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8F%92%E4%BB%B6%E5%8F%8A%E5%85%B6%E5%8E%9F%E7%90%86/" class="archive-article-date">
-  	<time datetime="2024-05-15T04:01:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/05/15/Vue3%E4%B8%AD%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8F%92%E4%BB%B6%E5%8F%8A%E5%85%B6%E5%8E%9F%E7%90%86/">Vue3中自定义插件及其原理</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">源码</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">自定义插件</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/05/07/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E2%80%94%E2%80%94%E5%9B%BE%E7%89%87%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/" class="archive-article-date">
-  	<time datetime="2024-05-07T11:25:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/05/07/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E2%80%94%E2%80%94%E5%9B%BE%E7%89%87%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/">性能优化——图片懒加载的实现方式</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">性能优化</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">图片懒加载</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/05/06/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4-%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/" class="archive-article-date">
-  	<time datetime="2024-05-06T07:42:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/05/06/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4-%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/">自定义指令--防抖与节流</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">自定义指令</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">防抖</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">节流</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/05/05/%E5%88%9D%E8%AF%86%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4/" class="archive-article-date">
-  	<time datetime="2024-05-05T09:40:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/05/05/%E5%88%9D%E8%AF%86%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E4%BB%A4/">初识自定义指令--实现按钮鉴权</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">自定义指令</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/04/29/%E6%B7%B1%E5%85%A5v-model-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BB%84%E4%BB%B6%E4%B8%ADv-model/" class="archive-article-date">
-  	<time datetime="2024-04-29T06:03:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-04-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/04/29/%E6%B7%B1%E5%85%A5v-model-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BB%84%E4%BB%B6%E4%B8%ADv-model/">深入v-model--自定义组件中v-model</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">v-model</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">自定义组件</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/">&amp;laquo; Prev</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><a class="extend next" rel="next" href="/archives/page/3/">Next &amp;raquo;</a>
-    </nav>
   
 
 
@@ -607,8 +416,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
