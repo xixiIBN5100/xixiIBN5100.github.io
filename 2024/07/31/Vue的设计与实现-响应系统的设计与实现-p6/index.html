@@ -6,17 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xixiIBN5100.github.io">
-  <title>离谱blog</title>
+  <title>Vue的设计与实现----响应系统的设计与实现(p6) | 离谱blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="超级小白的博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="离谱blog">
-<meta property="og:url" content="http://xixiibn5100.github.io/index.html">
+  <meta name="description" content="代理数组这一p我们开始实现代理数组.数组相对于普通对象有更多的读取和设置方法.我们先从通过索引读取或这只数组的元素值开始.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue的设计与实现----响应系统的设计与实现(p6)">
+<meta property="og:url" content="http://xixiibn5100.github.io/2024/07/31/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p6/index.html">
 <meta property="og:site_name" content="离谱blog">
-<meta property="og:description" content="超级小白的博客">
+<meta property="og:description" content="代理数组这一p我们开始实现代理数组.数组相对于普通对象有更多的读取和设置方法.我们先从通过索引读取或这只数组的元素值开始.">
 <meta property="og:locale">
+<meta property="og:image" content="http://xixiibn5100.github.io/assets/img/push.png">
+<meta property="article:published_time" content="2024-07-31T06:59:43.000Z">
+<meta property="article:modified_time" content="2024-08-01T09:04:33.309Z">
 <meta property="article:author" content="xixiIBN5100">
+<meta property="article:tag" content="Vue的设计与实现">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://xixiibn5100.github.io/assets/img/push.png">
   
     <link rel="alternative" href="/atom.xml" title="离谱blog" type="application/atom+xml">
   
@@ -144,16 +149,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-Vue的设计与实现-响应系统的设计与实现-p6" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-Vue的设计与实现-响应系统的设计与实现-p6" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/07/31/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p6/">Vue的设计与实现----响应系统的设计与实现(p6)</a>
+    <h1 class="article-title" itemprop="name">
+      Vue的设计与实现----响应系统的设计与实现(p6)
     </h1>
   
 
@@ -167,7 +170,74 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="代理数组"><a href="#代理数组" class="headerlink" title="代理数组"></a>代理数组</h2><p>这一p我们开始实现代理数组.数组相对于普通对象有更多的读取和设置方法.我们先从通过索引读取或这只数组的元素值开始.  </p>
-        
+<span id="more"></span>
+
+<h3 id="数组的索引与length"><a href="#数组的索引与length" class="headerlink" title="数组的索引与length"></a>数组的索引与length</h3><p>规范中明确说明,如果设置的索引大于数组当前的长度,那么要更新数组的length属性.所以通过索引设置元素值的时候,可能会隐式的修改<code>length</code>属性值.  </p>
+<p>所以在触发响应的时候也应该触发与<code>length</code>属性相关的依赖.为了实现这一点,我们需要修改拦截函数<code>set</code>  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">createReactiveArray</span>(<span class="params">obj, isShallow = <span class="literal">false</span></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Proxy</span>(obj, &#123;</span><br><span class="line">        <span class="title function_">set</span>(<span class="params">target, key, value, receiver</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> oldVal = target[key]</span><br><span class="line">            <span class="keyword">const</span> type = <span class="title class_">Array</span>.<span class="title function_">isArray</span>(target)</span><br><span class="line">            <span class="comment">//如果代理目标式数组,则检测被设置的索引值是否小于数组长度</span></span><br><span class="line">            <span class="comment">//如果是则视为SET,否则是ADD操作  </span></span><br><span class="line">            ? <span class="title class_">Number</span>(key) &lt; target.<span class="property">length</span> ? <span class="string">&#x27;SET&#x27;</span> : <span class="string">&#x27;ADD&#x27;</span></span><br><span class="line">            : <span class="title class_">Object</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">hasOwnProperty</span>.<span class="title function_">call</span>(target, key) ? <span class="string">&#x27;SET&#x27;</span> : <span class="string">&#x27;ADD&#x27;</span></span><br><span class="line">            </span><br><span class="line">            <span class="keyword">const</span> res = <span class="title class_">Reflect</span>.<span class="title function_">set</span>(target, key, value, receiver)</span><br><span class="line">            <span class="keyword">if</span>(target === reciver.<span class="property">raw</span>)&#123;</span><br><span class="line">                <span class="keyword">if</span>(oldVal !== value &amp;&amp; (oldVal === oldVal || value === value))&#123;</span><br><span class="line">                    <span class="title function_">trigger</span>(target, key, type)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> res</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 省略其他拦截函数</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样我们在代理数组的时候就会将设置的索引值和当前长度做比较,判断是否是SET还是ADD操作,从而触发<code>length</code>相关响应.<br>当然我们也要完善一下trigger函数  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">trigger</span>(<span class="params">target, key, type</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> depsMap = targetMap.<span class="title function_">get</span>(target)</span><br><span class="line">    <span class="keyword">if</span>(!depsMap) <span class="keyword">return</span></span><br><span class="line">    <span class="comment">//省略</span></span><br><span class="line">    <span class="keyword">if</span>(type === <span class="string">&#x27;ADD&#x27;</span> &amp;&amp; <span class="title class_">Array</span>.<span class="title function_">isArray</span>(target))&#123;</span><br><span class="line">        <span class="comment">//取出length相关联的副作用函数</span></span><br><span class="line">        <span class="keyword">const</span> lengthEffects = depsMap.<span class="title function_">get</span>(<span class="string">&#x27;length&#x27;</span>)</span><br><span class="line">        lengthEffects &amp;&amp; lengthEffects.<span class="title function_">forEach</span>(<span class="function"><span class="params">effect</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">if</span>(effect !== activeEffect)&#123;</span><br><span class="line">                effectToRun.<span class="title function_">push</span>(effect)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//触发effect</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>反过来思考,我们会发现设置数组的length的时候,也有可能改变数组元素.  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> arr = <span class="title function_">reactive</span>([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])</span><br><span class="line"><span class="title function_">effect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(arr[<span class="number">0</span>])</span><br><span class="line">&#125;)</span><br><span class="line">arr.<span class="property">length</span> = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>如上述代码所示,将数组的长度设为0,那么数组中所有元素都会被删除.而假如我们设置长度为100,则不会影响数组中的.容易看出,当修改length属性的时候,只有索引值大于等于新length属性值才需要触发响应.在调用<code>trigger</code>函数的时候,应该把新的length属性值传递过去.  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">trigger</span>(<span class="params">target, key, type, newVal</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> depsMap = targetMap.<span class="title function_">get</span>(target)</span><br><span class="line">    <span class="keyword">if</span>(!depsMap) <span class="keyword">return</span></span><br><span class="line">    <span class="comment">//省略</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="title class_">Array</span>.<span class="title function_">isArray</span>(target) &amp;&amp; key === <span class="string">&#x27;length&#x27;</span>)&#123;</span><br><span class="line">        <span class="comment">//对于索引大于或等于新length属性值的副作用函数,需要重新触发</span></span><br><span class="line">        depsMap.<span class="title function_">forEach</span>(<span class="function">(<span class="params">effects, key</span>) =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">if</span>(key &gt;= newVal)&#123;</span><br><span class="line">                effects.<span class="title function_">forEach</span>(<span class="function"><span class="params">effect</span> =&gt;</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span>(effect !== activeEffect)&#123;</span><br><span class="line">                        effectToRun.<span class="title function_">push</span>(effect)</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="遍历数组"><a href="#遍历数组" class="headerlink" title="遍历数组"></a>遍历数组</h3><p>数组对象可以使用<code>for...in</code>循环遍历.但是有必要指出,我们应该尽量避免使用<code>for...in</code>循环遍历数组.但既然在语法上是可行的,我们也需要考虑到.  </p>
+<p>添加新元素和修改数组长度都会影响到遍历.实质上,一旦数组的length发生变化,那么遍历的结果就会改变.自然的,我们可以在<code>ownKeys</code>拦截函数内判断当前操作对象是否为数组,如果是,则使用length作为key建立响应式联系.  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">createReactive</span>(<span class="params">obj, isShallow = <span class="literal">false</span></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Proxy</span>(obj, &#123;</span><br><span class="line">        <span class="comment">//省略其他拦截函数</span></span><br><span class="line">        <span class="title function_">ownKeys</span>(<span class="params">target</span>) &#123;</span><br><span class="line">            <span class="comment">// 如果操作对象是数组,则使用length作为key并建立响应联系</span></span><br><span class="line">            <span class="title function_">track</span>(target,<span class="title class_">Array</span>.<span class="title function_">isArray</span>(target) ? <span class="string">&#x27;length&#x27;</span> : <span class="variable constant_">ITERATE_KEY</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="title class_">Reflect</span>.<span class="title function_">ownKeys</span>(target)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样就能正确触发响应啦  </p>
+<p>接下来我们来看看用<code>for...of</code>循环遍历数组. 很遗憾就我们现在的代码而言,已经实现了这种遍历的响应.因为<code>for...of</code>循环会调用<code>Symbol.iterator</code>方法,而<code>Symbol.iterator</code>方法会返回一个迭代器,迭代器的<code>next</code>方法会返回一个包含value和done两个属性的对象.  </p>
+<p>这就表明只要在副作用函数与数组的长度和索引之间建立响应联系,那么<code>for...of</code>循环遍历数组的响应就会生效.我们已经实现了(&gt; &#x3D; &lt;).  </p>
+<h3 id="数组的查找方法"><a href="#数组的查找方法" class="headerlink" title="数组的查找方法"></a>数组的查找方法</h3><p>数组的方法内部其实都依赖了对象的基本语义.大多数情况下,我们不需要做处理就可以让这些方法按照预期工作.  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> arr = <span class="title function_">reactive</span>([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])</span><br><span class="line"><span class="title function_">effect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(arr.<span class="title function_">includes</span>(<span class="number">1</span>))</span><br><span class="line">&#125;)</span><br><span class="line">arr[<span class="number">0</span>] = <span class="number">3</span> <span class="comment">// 触发响应,打印false</span></span><br></pre></td></tr></table></figure>
+<p>然而<code>includes</code>方法并不总是按照预期工作  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;&#125;</span><br><span class="line"><span class="keyword">const</span> arr = <span class="title function_">reactive</span>([obj])</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(arr.<span class="title function_">includes</span>(arr[<span class="number">0</span>])) <span class="comment">//false</span></span><br></pre></td></tr></table></figure>
+
+<p>很明显,按照正常情况来说,应该打印true.实际上却打印false,这是因为<code>includes</code>方法内部会通过arr访问数组元素,读取obj的时候,因为他是一个对象,所以会返回一个代理对象(深响应).  </p>
+<p>而<code>arr[0]</code>访问obj的时候也会返回一个代理对象,这两个代理对象是不同的,因为每次调用<code>reactive</code>都会返回一个新的代理对象.  </p>
+<p>解决方案如下   </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个map实例,存储宣誓对象到代理对象的映射</span></span><br><span class="line"><span class="keyword">const</span> reactiveMap = <span class="keyword">new</span> <span class="title class_">Map</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">reactive</span>(<span class="params">obj</span>) &#123;</span><br><span class="line">    <span class="comment">// 优先通过原始对象obj寻找之前创造的代理对象,如果找到了,返回已有的代理对象</span></span><br><span class="line">    <span class="keyword">const</span> existionProxy = reactiveMap.<span class="title function_">get</span>(obj)</span><br><span class="line">    <span class="keyword">if</span>(existionProxy) <span class="keyword">return</span> existionProxy</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 否则创造新的代理对象</span></span><br><span class="line">    <span class="keyword">const</span> proxy = <span class="title function_">creatReactive</span>(obj)</span><br><span class="line">    reactiveMap.<span class="title function_">set</span>(obj, proxy)</span><br><span class="line">    <span class="keyword">return</span> proxy</span><br></pre></td></tr></table></figure>
+
+<p>这样我们就能避免给一个原始对象多次创建代理对象的问题.原先的例子亦能能够正常输出.  </p>
+<p>然而不能高兴的太早.  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj =&#123;&#125;</span><br><span class="line"><span class="keyword">const</span> arr = <span class="title function_">reactive</span>([obj])</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(arr.<span class="title function_">includes</span>(obj)) <span class="comment">//false</span></span><br></pre></td></tr></table></figure>
+
+<p>我们直接把原始对象传给<code>includes</code>方法,这是很符合直觉的行为,我们希望他输出true.为什么会输出false呢?  </p>
+<p>原因很简单,<code>includes</code>内部的<code>this</code>是指向代理对象<code>arr</code>,获取元素得到的值也肯定是代理对象,所以拿原始对象obj查找肯定找不到,必定会返回false.  </p>
+<p>为此,我们需要重写数组的<code>includes</code>方法才能解决这个问题.  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> arrayInstrumentations = &#123;</span><br><span class="line">    <span class="attr">includes</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;<span class="comment">/*...*/</span>&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">createReactive</span>(<span class="params">obj, isShallow = <span class="literal">false</span></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Proxy</span>(obj, &#123;</span><br><span class="line">        <span class="comment">//拦截读取操作</span></span><br><span class="line">        <span class="title function_">get</span>(<span class="params">target, key, receiver</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span>(key === <span class="string">&#x27;raw&#x27;</span>)&#123;</span><br><span class="line">                <span class="keyword">return</span> target</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 如果操作的对象是数组,并且key存在于arrayInstrumentations对象中,则返回arrayInstrumentations[key]</span></span><br><span class="line">            <span class="keyword">if</span>(<span class="title class_">Array</span>.<span class="title function_">isArray</span>(target) &amp;&amp; arrayInstrumentations.<span class="title function_">hasOwnProperty</span>(key))&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="title class_">Reflect</span>.<span class="title function_">get</span>(arrayInstrumentations, key, receiver)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//省略...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在上段代码中,我们修改了<code>get</code>拦截函数,目的是重写数组的<code>includes</code>方法.  </p>
+<p><code>arr.includes</code>可以理解为读取代理对象<code>arr</code>中的<code>includes</code>属性,这就会触发get拦截函数.如果target为数组并且读取的键值存在于<code>arrayInstrumentations</code>上,则返回<code>arrayInstrumentations</code>对象上对应的值.  </p>
+<p>也就是说当执行<code>arr.includes</code>的时候,实际执行的是<code>arrayInstrumentations.includes</code>方法,实现了重写.  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> originalIncludes = <span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">includes</span></span><br><span class="line"><span class="keyword">const</span> arrayInstrumentations = &#123;</span><br><span class="line">    <span class="attr">includes</span>: <span class="keyword">function</span> (<span class="params">...args</span>) &#123;</span><br><span class="line">        <span class="comment">// this是代理对象,先在代理对象中查找,将结果储存在res中</span></span><br><span class="line">        <span class="keyword">let</span> res = originalIncludes.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span>(res === <span class="literal">false</span>) &#123;</span><br><span class="line">            <span class="comment">//res 为false,说明在代理对象中找不到,通过this.raw拿到原始数组,再去查找并更新res值</span></span><br><span class="line">            res = originalIncludes.<span class="title function_">apply</span>(<span class="variable language_">this</span>.<span class="property">raw</span>, args)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//返回最终结果</span></span><br><span class="line">        <span class="keyword">return</span> res</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个重写实现了先在代理对象上查找,如果找不到,就会通过raw拿到原始数据,再去查找并更新res值.这样我们之前的代码就能符合预期了.  </p>
+<p>除了<code>includes</code>方法外,还有<code>indexOf</code>和<code>lastIndexOf</code>方法需要进行这样的处理.  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> arrayInstrumentations =&#123;&#125;</span><br><span class="line">[<span class="string">&#x27;includes&#x27;</span>, <span class="string">&#x27;indexOf&#x27;</span>, <span class="string">&#x27;lastIndexOf&#x27;</span>].<span class="title function_">forEach</span>(<span class="function"><span class="params">method</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> originMethod = <span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>[method]</span><br><span class="line">    arrayInstrumentations[method] = <span class="keyword">function</span> (<span class="params">...args</span>) &#123;</span><br><span class="line">        <span class="keyword">let</span> res = originMethod.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(res === <span class="literal">false</span>) &#123;</span><br><span class="line">            res = originMethod.<span class="title function_">apply</span>(<span class="variable language_">this</span>.<span class="property">raw</span>, args)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="隐式改变数组长度的原型方法"><a href="#隐式改变数组长度的原型方法" class="headerlink" title="隐式改变数组长度的原型方法"></a>隐式改变数组长度的原型方法</h3><p>以<code>push</code>为例,当调用push方法向数组中添加元素的时候,即会读取读取数组的length属性值,也会设置length的属性值.这会导致两个独立的副作用函数相互影响.  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> arr = <span class="title function_">reactive</span>([])</span><br><span class="line"><span class="title function_">effect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    arr.<span class="title function_">push</span>(<span class="number">1</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="title function_">effect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    arr.<span class="title function_">push</span>(<span class="number">1</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>如果尝试运行上述代码,会得到栈溢出的错误.为什么会这样呢<br><img src="/assets/img/push.png"></p>
+<p>所以我们要重写数组的push方法  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//一个标记变量,代表是否进行追踪</span></span><br><span class="line"><span class="keyword">let</span> shouldTrack = <span class="literal">true</span></span><br><span class="line">;[<span class="string">&#x27;push&#x27;</span>].<span class="title function_">forEach</span>(<span class="function"><span class="params">method</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">//获取原始的push方法</span></span><br><span class="line">    <span class="keyword">const</span> originMethod = <span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>[method]</span><br><span class="line">    <span class="comment">//重写</span></span><br><span class="line">    arrayInstrumentations[method] = <span class="keyword">function</span> (<span class="params">...args</span>) &#123;</span><br><span class="line">        <span class="comment">//在调用原始方法之前,禁止追踪</span></span><br><span class="line">        shouldTrack = <span class="literal">false</span></span><br><span class="line">        <span class="comment">//push的默认行为</span></span><br><span class="line">        <span class="keyword">let</span> res = originMethod.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args)</span><br><span class="line">        <span class="comment">//在调用原始方法之后,恢复追踪</span></span><br><span class="line">        shouldTrack = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">return</span> res</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>最后,我们还需要修改一下track函数  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">track</span>(<span class="params">target, key</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span>(!activeEffect || !shouldTrack) <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当push方法间接获取length属性的时候,此时是禁止追踪状态,所以length属性与副作用函数之间就不会建立联系.这样一来,之前的代码就可以正常工作了.  </p>
+<p>其他一些方法也要做蕾丝处理  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> shouldTrack = <span class="literal">true</span></span><br><span class="line">;[<span class="string">&#x27;pop&#x27;</span>, <span class="string">&#x27;shift&#x27;</span>, <span class="string">&#x27;unshift&#x27;</span>, <span class="string">&#x27;splice&#x27;</span>].<span class="title function_">forEach</span>(<span class="function"><span class="params">method</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> originMethod = <span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>[method]</span><br><span class="line">    arrayInstrumentations[method] = <span class="keyword">function</span> (<span class="params">...args</span>) &#123;</span><br><span class="line">        shouldTrack = <span class="literal">false</span></span><br><span class="line">        <span class="keyword">let</span> res = originMethod.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args)</span><br><span class="line">        shouldTrack = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">return</span> res</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><del>沟槽的代理数组终于结束了写死我了</del>  </p>
+<blockquote>
+<p>写于西13</p>
+</blockquote>
+
       
 
       
@@ -189,16 +259,75 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/07/31/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p6/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://xixiibn5100.github.io/2024/07/31/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p6/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2024/07/29/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p5/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Vue的设计与实现----响应系统的设计与实现(p5)</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -213,688 +342,32 @@
         </div>
         
         
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Vue的设计与实现-响应系统的设计与实现-p5" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/07/29/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p5/">Vue的设计与实现----响应系统的设计与实现(p5)</a>
-    </h1>
-  
-
-        
-        <a href="/2024/07/29/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p5/" class="archive-article-date">
-  	<time datetime="2024-07-29T09:02:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="合理的触发响应"><a href="#合理的触发响应" class="headerlink" title="合理的触发响应"></a>合理的触发响应</h2>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Vue的设计与实现</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/07/29/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p5/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%90%86%E6%95%B0%E7%BB%84"><span class="toc-number">1.</span> <span class="toc-text">代理数组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%9A%84%E7%B4%A2%E5%BC%95%E4%B8%8Elength"><span class="toc-number">1.1.</span> <span class="toc-text">数组的索引与length</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%81%8D%E5%8E%86%E6%95%B0%E7%BB%84"><span class="toc-number">1.2.</span> <span class="toc-text">遍历数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%9A%84%E6%9F%A5%E6%89%BE%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.</span> <span class="toc-text">数组的查找方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9A%90%E5%BC%8F%E6%94%B9%E5%8F%98%E6%95%B0%E7%BB%84%E9%95%BF%E5%BA%A6%E7%9A%84%E5%8E%9F%E5%9E%8B%E6%96%B9%E6%B3%95"><span class="toc-number">1.4.</span> <span class="toc-text">隐式改变数组长度的原型方法</span></a></li></ol></li></ol>
+                    </div>
+                </span>
             </div>
         </div>
         
-        
     </div>
 </aside>
 
 
 
-
-  
-    <article id="post-Vue的设计与实现-响应系统的设计与实现-p4" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/07/27/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p4/">Vue的设计与实现----响应系统的设计与实现(p4)</a>
-    </h1>
-  
-
-        
-        <a href="/2024/07/27/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p4/" class="archive-article-date">
-  	<time datetime="2024-07-27T06:33:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>从这一p开始,我们将学习 <strong>非原始值的响应式方案</strong>  </p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Vue的设计与实现</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/07/27/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p4/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Vue的设计与实现-响应系统的设计与实现-p3" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/07/25/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p3/">Vue的设计与实现----响应系统的设计与实现(p3)</a>
-    </h1>
-  
-
-        
-        <a href="/2024/07/25/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p3/" class="archive-article-date">
-  	<time datetime="2024-07-25T06:02:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-25</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="watch的实现原理"><a href="#watch的实现原理" class="headerlink" title="watch的实现原理"></a>watch的实现原理</h2>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Vue的设计与实现</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/07/25/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-p3/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Vue的设计与实现-响应系统的作用与实现-p2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/07/21/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p2/">Vue的设计与实现----响应系统的作用与实现(p2)</a>
-    </h1>
-  
-
-        
-        <a href="/2024/07/21/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p2/" class="archive-article-date">
-  	<time datetime="2024-07-21T13:58:42.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="嵌套的effect与effect栈"><a href="#嵌套的effect与effect栈" class="headerlink" title="嵌套的effect与effect栈"></a>嵌套的effect与effect栈</h2><p><del>唉又是一个响应系统的拦路虎</del>    </p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Vue的设计与实现</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/07/21/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Vue的设计与实现-响应系统的作用与实现-p1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/07/20/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p1/">Vue的设计与实现----响应系统的作用与实现(p1)</a>
-    </h1>
-  
-
-        
-        <a href="/2024/07/20/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p1/" class="archive-article-date">
-  	<time datetime="2024-07-20T06:06:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><strong>写在前面:</strong><br>刚刚休息完一段时间,准备开始暑假的学习,除了做一些项目的开发,我更想去探究一下框架的底层实现,但是阅读源码总是非常困难的,特别是Vue这样优秀的框架.但学习到的底层代码思想,是写普通项目接触不到的东西,还是希望自己能够坚持下去  </p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Vue的设计与实现</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/07/20/Vue%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%93%8D%E5%BA%94%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0-p1/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-网络长链接-SSE与websocket" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/07/09/%E7%BD%91%E7%BB%9C%E9%95%BF%E9%93%BE%E6%8E%A5-SSE%E4%B8%8Ewebsocket/">网络长链接----SSE与websocket</a>
-    </h1>
-  
-
-        
-        <a href="/2024/07/09/%E7%BD%91%E7%BB%9C%E9%95%BF%E9%93%BE%E6%8E%A5-SSE%E4%B8%8Ewebsocket/" class="archive-article-date">
-  	<time datetime="2024-07-09T14:23:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在一些场景下，我们希望客户端能够实时与服务端通信，而不是通过轮询的方式来获取服务端的消息。这种时候我们就需要网络长链接来实现  </p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/07/09/%E7%BD%91%E7%BB%9C%E9%95%BF%E9%93%BE%E6%8E%A5-SSE%E4%B8%8Ewebsocket/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-ajax与fetch" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/07/08/ajax%E4%B8%8Efetch/">ajax与fetch全套</a>
-    </h1>
-  
-
-        
-        <a href="/2024/07/08/ajax%E4%B8%8Efetch/" class="archive-article-date">
-  	<time datetime="2024-07-08T15:32:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>有一次面试官让我手写原生请求没写出来…..   </p>
-<p>还是太过于依赖axios中前人传下来的已经封装好的请求,这次也算是补全基础啦  </p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/07/08/ajax%E4%B8%8Efetch/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-输入url按下回车-发生了什么" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/07/07/%E8%BE%93%E5%85%A5url%E6%8C%89%E4%B8%8B%E5%9B%9E%E8%BD%A6-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/">输入url按下回车,发生了什么</a>
-    </h1>
-  
-
-        
-        <a href="/2024/07/07/%E8%BE%93%E5%85%A5url%E6%8C%89%E4%B8%8B%E5%9B%9E%E8%BD%A6-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" class="archive-article-date">
-  	<time datetime="2024-07-07T15:01:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>诶这个问题面试的时候作为技术的第一个问题没回答出来,连夜学习计网  </p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">面试</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/07/07/%E8%BE%93%E5%85%A5url%E6%8C%89%E4%B8%8B%E5%9B%9E%E8%BD%A6-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-router4汇总-p2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/07/07/router4%E6%B1%87%E6%80%BB-p2/">router4汇总(p2)</a>
-    </h1>
-  
-
-        
-        <a href="/2024/07/07/router4%E6%B1%87%E6%80%BB-p2/" class="archive-article-date">
-  	<time datetime="2024-07-07T02:56:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-07-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="路由过渡动画"><a href="#路由过渡动画" class="headerlink" title="路由过渡动画"></a>路由过渡动画</h2><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">const</span> routes = [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">path</span>: <span class="string">&#x27;/user1&#x27;</span>,</span><br><span class="line">        <span class="attr">component</span>: <span class="function">() =&gt;</span> <span class="keyword">import</span>(<span class="string">&quot;../componts/Login.vue&quot;</span>),</span><br><span class="line">        <span class="attr">meta</span>: &#123;</span><br><span class="line">            <span class="attr">title</span>: <span class="string">&#x27;登录&#x27;</span>,</span><br><span class="line">            <span class="attr">transition</span>: <span class="string">&quot;animate_fadeIn&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">path</span>: <span class="string">&#x27;/user2&#x27;</span>,</span><br><span class="line">        <span class="attr">component</span>: <span class="function">() =&gt;</span> <span class="keyword">import</span>(<span class="string">&quot;../componts/Home.vue&quot;</span>),</span><br><span class="line">        <span class="attr">meta</span>: &#123;</span><br><span class="line">            <span class="attr">title</span>: <span class="string">&#x27;首页&#x27;</span>,</span><br><span class="line">            <span class="attr">transition</span>: <span class="string">&quot;animate_fadeOut&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">]</span><br></pre></td></tr></table></figure>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">router4</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/07/07/router4%E6%B1%87%E6%80%BB-p2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
   
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
-    </nav>
+  
+
+  
+
+  
+
   
 
 
@@ -914,8 +387,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
